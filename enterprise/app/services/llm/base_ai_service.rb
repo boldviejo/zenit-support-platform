@@ -19,7 +19,16 @@ class Llm::BaseAiService
   end
 
   def chat(model: @model, temperature: @temperature)
-    RubyLLM.chat(model: model).with_temperature(temperature)
+    llm_chat = RubyLLM.chat(model: model)
+    Llm::Models.accepts_temperature?(model) ? llm_chat.with_temperature(temperature) : llm_chat
+  end
+
+  # Anthropic has no response_format; prompts already ask for JSON and responses are sanitized before parsing.
+  def json_chat(model: @model, temperature: @temperature)
+    llm_chat = chat(model: model, temperature: temperature)
+    return llm_chat if Llm::Models.anthropic?(model)
+
+    llm_chat.with_params(response_format: { type: 'json_object' })
   end
 
   private

@@ -37,6 +37,15 @@ module Llm::Models
       model_config(model_name)&.dig('provider')
     end
 
+    def anthropic?(model_name)
+      provider_for(model_name) == 'anthropic'
+    end
+
+    # Newer Claude models reject non-default sampling parameters such as temperature.
+    def accepts_temperature?(model_name)
+      model_config(model_name)&.dig('accepts_temperature') != false
+    end
+
     def feature_config(feature_key)
       feature = features[feature_key.to_s]
       return nil unless feature
