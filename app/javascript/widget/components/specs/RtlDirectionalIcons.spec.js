@@ -3,7 +3,6 @@ import { createStore } from 'vuex';
 import FluentIcon from 'shared/components/FluentIcon/Index.vue';
 import CustomerSatisfaction from 'shared/components/CustomerSatisfaction.vue';
 import ChatHeader from '../ChatHeader.vue';
-import ChatSendButton from '../ChatSendButton.vue';
 import EmailInput from '../template/EmailInput.vue';
 import ArticleListItem from '../pageComponents/Home/Article/ArticleListItem.vue';
 
@@ -28,14 +27,6 @@ describe('widget directional icons in RTL', () => {
 
     expect(wrapper.findComponent(FluentIcon).classes()).toContain(
       'rtl:rotate-180'
-    );
-  });
-
-  it('mirrors the composer send icon', () => {
-    const wrapper = shallowMount(ChatSendButton);
-
-    expect(wrapper.findComponent(FluentIcon).classes()).toContain(
-      'rtl:-scale-x-100'
     );
   });
 

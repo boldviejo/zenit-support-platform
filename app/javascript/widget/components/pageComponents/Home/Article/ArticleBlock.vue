@@ -22,11 +22,11 @@ const onArticleClick = link => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-3">
-    <h3 class="font-medium text-n-slate-12">
+  <div class="flex flex-col gap-1">
+    <h3 class="text-sm font-medium text-n-slate-11">
       {{ $t('PORTAL.POPULAR_ARTICLES') }}
     </h3>
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col -mx-2">
       <ArticleListItem
         v-for="article in articlesToDisplay"
         :key="article.slug"
@@ -37,7 +37,7 @@ const onArticleClick = link => {
     </div>
     <div>
       <button
-        class="font-medium tracking-wide inline-flex"
+        class="inline-flex text-sm font-medium tracking-wide"
         :style="{ color: widgetColor }"
         @click="$emit('viewAll')"
       >

@@ -34,6 +34,7 @@ import WhatsappManualMigrationDialog from './components/WhatsappManualMigrationD
 import WhatsappManualMigrationBanner from './components/WhatsappManualMigrationBanner.vue';
 import { FEATURE_FLAGS } from '../../../../featureFlags';
 import SenderNameExamplePreview from './components/SenderNameExamplePreview.vue';
+import StarterPromptsEditor from './components/StarterPromptsEditor.vue';
 import LockToSingleConversationPreview from './components/LockToSingleConversationPreview.vue';
 import NextButton from 'dashboard/components-next/button/Button.vue';
 import SpinnerLoader from 'dashboard/components-next/spinner/Spinner.vue';
@@ -70,6 +71,7 @@ export default {
     SettingsAccordion,
     WeeklyAvailability,
     SenderNameExamplePreview,
+    StarterPromptsEditor,
     LockToSingleConversationPreview,
     MicrosoftReauthorize,
     GoogleReauthorize,
@@ -112,6 +114,7 @@ export default {
       webhookUrl: '',
       channelWelcomeTitle: '',
       channelWelcomeTagline: '',
+      starterPrompts: [],
       selectedFeatureFlags: [],
       replyTime: '',
       selectedTabIndex: 0,
@@ -567,6 +570,7 @@ export default {
       this.channelWebsiteUrl = this.inbox.website_url;
       this.channelWelcomeTitle = this.inbox.welcome_title;
       this.channelWelcomeTagline = this.inbox.welcome_tagline || '';
+      this.starterPrompts = this.inbox.starter_prompts || [];
       this.selectedFeatureFlags = this.inbox.selected_feature_flags || [];
       this.replyTime = this.inbox.reply_time;
       this.locktoSingleConversation = this.inbox.lock_to_single_conversation;
@@ -709,6 +713,9 @@ export default {
             webhook_url: this.webhookUrl,
             welcome_title: this.channelWelcomeTitle || '',
             welcome_tagline: this.channelWelcomeTagline || '',
+            starter_prompts: this.starterPrompts
+              .map(prompt => prompt.trim())
+              .filter(Boolean),
             selectedFeatureFlags: this.selectedFeatureFlags,
             reply_time: this.replyTime || 'in_a_few_minutes',
             continuity_via_email:
@@ -1114,6 +1121,18 @@ export default {
               </SettingsFieldSection>
 
               <SettingsFieldSection
+                :label="
+                  $t('INBOX_MGMT.ADD.WEBSITE_CHANNEL.STARTER_PROMPTS.LABEL')
+                "
+                :help-text="
+                  $t('INBOX_MGMT.ADD.WEBSITE_CHANNEL.STARTER_PROMPTS.HELP_TEXT')
+                "
+                class="[&>div]:!items-start [&>div>label]:mt-1"
+              >
+                <StarterPromptsEditor v-model="starterPrompts" />
+              </SettingsFieldSection>
+
+              <SettingsFieldSection
                 :label="$t('INBOX_MGMT.ADD.WEBSITE_CHANNEL.WIDGET_COLOR.LABEL')"
               >
                 <div class="justify-start">
@@ -1390,6 +1409,7 @@ export default {
               <Widget
                 :welcome-heading="channelWelcomeTitle"
                 :welcome-tagline="channelWelcomeTagline"
+                :starter-prompts="starterPrompts"
                 :website-name="selectedInboxName"
                 :logo="avatarUrl"
                 is-online

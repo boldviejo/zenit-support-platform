@@ -1,9 +1,7 @@
 <script setup>
-import { ref, computed } from 'vue';
-import { useI18n } from 'vue-i18n';
-import ResizableTextArea from 'shared/components/ResizableTextArea.vue';
-import Avatar from 'next/avatar/Avatar.vue';
-import FluentIcon from 'shared/components/FluentIcon/Index.vue';
+import { computed } from 'vue';
+import { getContrastingTextColor } from '@chatwoot/utils';
+import { useMessageFormatter } from 'shared/composables/useMessageFormatter';
 
 const props = defineProps({
   config: {
@@ -12,70 +10,55 @@ const props = defineProps({
   },
 });
 
-const { t } = useI18n();
+const { formatMessage } = useMessageFormatter();
 
-const isInputFocused = ref(false);
-
-const getStatusText = computed(() => {
-  return props.config.isOnline
-    ? t('INBOX_MGMT.WIDGET_BUILDER.BODY.TEAM_AVAILABILITY.ONLINE')
-    : t('INBOX_MGMT.WIDGET_BUILDER.BODY.TEAM_AVAILABILITY.OFFLINE');
-});
+const sendIconColor = computed(() =>
+  getContrastingTextColor(props.config.color)
+);
 </script>
 
 <template>
-  <div class="relative flex flex-col w-full px-4">
-    <div
-      v-if="config.isDefaultScreen"
-      class="p-4 rounded-md shadow-sm bg-n-background dark:bg-n-solid-2"
-    >
-      <div class="flex items-center justify-between">
-        <div>
-          <div
-            class="text-sm font-medium leading-4 text-n-slate-12 dark:text-n-slate-50"
-          >
-            {{ getStatusText }}
-          </div>
-          <div class="mt-1 text-xs text-n-slate-11">
-            {{ config.replyTime }}
-          </div>
-        </div>
-        <Avatar name="C" :size="34" rounded-full />
-      </div>
-      <button
-        v-if="config.isDefaultScreen"
-        class="inline-flex items-center justify-between px-2 py-1 mt-1 -ml-2 font-medium leading-6 bg-transparent rounded-md text-n-slate-12 dark:bg-transparent"
-        :style="{ color: config.color }"
-      >
-        <span class="pr-2 text-xs">
+  <div class="flex flex-col w-full gap-4 px-3">
+    <div v-if="config.isDefaultScreen" class="flex flex-col gap-3 px-1">
+      <div>
+        <h2 class="text-xl font-semibold break-words text-n-slate-12">
           {{
-            $t(
-              'INBOX_MGMT.WIDGET_BUILDER.FOOTER.START_CONVERSATION_BUTTON_TEXT'
-            )
+            config.welcomeHeading ||
+            $t('INBOX_MGMT.WIDGET_BUILDER.BODY.DEFAULT_GREETING')
           }}
-        </span>
-        <FluentIcon icon="arrow-right" size="14" />
-      </button>
+        </h2>
+        <p
+          v-if="config.welcomeTagline"
+          v-dompurify-html="formatMessage(config.welcomeTagline)"
+          class="mt-1 text-sm break-words text-n-slate-11 [&_a]:underline"
+        />
+      </div>
+      <ul v-if="config.starterPrompts.length" class="flex flex-col gap-2">
+        <li
+          v-for="prompt in config.starterPrompts"
+          :key="prompt"
+          class="flex items-center gap-2.5 text-sm text-n-slate-12"
+        >
+          <span class="i-lucide-message-circle shrink-0 text-n-slate-11" />
+          {{ prompt }}
+        </li>
+      </ul>
     </div>
     <div
-      v-else
-      class="flex items-center h-10 bg-white rounded-md dark:!bg-n-slate-3"
-      :class="{ 'ring-2 ring-n-brand dark:ring-n-brand': isInputFocused }"
+      class="flex items-center gap-1 p-1 shadow-sm rounded-3xl bg-n-solid-1 outline outline-1 -outline-offset-1 outline-n-weak"
     >
-      <ResizableTextArea
-        id="chat-input"
-        :rows="1"
-        :placeholder="
-          $t('INBOX_MGMT.WIDGET_BUILDER.FOOTER.CHAT_INPUT_PLACEHOLDER')
-        "
-        class="flex-grow !bg-white border-0 outline-none !outline-0 border-none h-8 text-sm dark:!bg-n-slate-3 pb-0 !pt-1.5 resize-none px-3 !mb-0 focus:outline-none rounded-md"
-        @focus="isInputFocused = true"
-        @blur="isInputFocused = false"
-      />
-      <div class="flex items-center gap-2 px-2">
-        <FluentIcon icon="emoji" />
-        <FluentIcon class="icon-send" icon="send" />
-      </div>
+      <span class="flex items-center justify-center size-8 text-n-slate-12">
+        <span class="text-lg i-lucide-plus" />
+      </span>
+      <span class="flex-1 px-1 text-sm text-n-slate-10">
+        {{ $t('INBOX_MGMT.WIDGET_BUILDER.FOOTER.CHAT_INPUT_PLACEHOLDER') }}
+      </span>
+      <span
+        class="flex items-center justify-center rounded-full size-8"
+        :style="{ backgroundColor: config.color, color: sendIconColor }"
+      >
+        <span class="i-lucide-arrow-up" />
+      </span>
     </div>
   </div>
 </template>

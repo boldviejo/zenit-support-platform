@@ -15,6 +15,8 @@ import ReplyToChip from 'widget/components/ReplyToChip.vue';
 import { BUS_EVENTS } from 'shared/constants/busEvents';
 import { emitter } from 'shared/helpers/mitt';
 
+const BOT_SENDER_TYPES = ['agent_bot', 'captain_assistant'];
+
 export default {
   name: 'AgentMessage',
   components: {
@@ -99,6 +101,17 @@ export default {
         this.message.additional_attributes?.sender_avatar_url || displayImage
       );
     },
+    isBotMessage() {
+      const { sender, additional_attributes: attrs } = this.message;
+      if (sender) return BOT_SENDER_TYPES.includes(sender.type);
+      return !attrs?.sender_name;
+    },
+    showAgentIdentity() {
+      return (
+        (this.message.showAvatar || this.hasRecordedResponse) &&
+        !this.isBotMessage
+      );
+    },
     hasRecordedResponse() {
       return (
         this.messageContentAttributes.submitted_email ||
@@ -172,24 +185,13 @@ export default {
     }"
   >
     <div v-if="!isASubmittedForm" class="agent-message">
-      <div class="avatar-wrap">
-        <div class="user-thumbnail-box">
-          <Avatar
-            v-if="message.showAvatar || hasRecordedResponse"
-            :src="avatarUrl"
-            :size="24"
-            :name="agentName"
-            rounded-full
-          />
-        </div>
-      </div>
       <div class="message-wrap">
         <div v-if="hasReplyTo" class="flex mt-2 mb-1 text-xs">
           <ReplyToChip :reply-to="replyTo" />
         </div>
         <div class="flex w-full gap-1">
           <div
-            class="space-y-2"
+            class="min-w-0 space-y-2"
             :class="{
               'w-full':
                 contentType === 'form' &&
@@ -206,7 +208,7 @@ export default {
             />
             <div
               v-if="hasAttachments"
-              class="space-y-2 chat-bubble has-attachment agent bg-n-background dark:bg-n-solid-3"
+              class="space-y-2 chat-bubble has-attachment agent bg-n-solid-2"
               :class="wrapClass"
             >
               <div
@@ -246,12 +248,12 @@ export default {
             />
           </div>
         </div>
-        <p
-          v-if="message.showAvatar || hasRecordedResponse"
-          class="agent-name text-n-slate-11"
-        >
-          {{ agentName }}
-        </p>
+        <div v-if="showAgentIdentity" class="flex items-center gap-1.5 mt-2">
+          <Avatar :src="avatarUrl" :size="16" :name="agentName" rounded-full />
+          <p class="agent-name text-n-slate-11">
+            {{ agentName }}
+          </p>
+        </div>
       </div>
     </div>
 

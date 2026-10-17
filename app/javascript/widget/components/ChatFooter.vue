@@ -149,14 +149,13 @@ export default {
       @dismiss="inReplyTo = null"
     />
     <ChatInputWrap
-      class="shadow-sm"
       :on-send-message="handleSendMessage"
       :on-send-attachment="handleSendAttachment"
     />
   </footer>
   <div v-else>
     <CustomButton
-      class="font-medium"
+      class="font-medium !rounded-full"
       block
       :bg-color="widgetColor"
       :text-color="textColor"

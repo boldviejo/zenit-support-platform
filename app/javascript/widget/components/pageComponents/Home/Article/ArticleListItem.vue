@@ -17,15 +17,16 @@ const onClick = () => {
 
 <template>
   <div
-    class="flex items-center justify-between rounded cursor-pointer text-n-slate-11 hover:text-n-slate-12 gap-2"
+    class="flex items-center gap-3 px-2 py-2 transition-colors cursor-pointer rounded-xl text-n-slate-12 hover:bg-n-slate-3"
     role="button"
     @click="onClick"
   >
-    <button
-      class="underline-offset-2 leading-6 ltr:text-left rtl:text-right text-base"
-    >
+    <span class="text-lg i-lucide-file-text shrink-0 text-n-slate-11" />
+    <button class="flex-1 text-base leading-6 ltr:text-left rtl:text-right">
       {{ title }}
     </button>
-    <span class="i-lucide-chevron-right text-base shrink-0 rtl:rotate-180" />
+    <span
+      class="text-base i-lucide-chevron-right shrink-0 text-n-slate-10 rtl:rotate-180"
+    />
   </div>
 </template>

@@ -1,39 +1,14 @@
-<script setup>
-defineProps({
-  config: {
-    type: Object,
-    default: () => ({}),
-  },
-});
-</script>
-
 <template>
-  <div class="h-[calc(2rem*10)] px-4 overflow-y-auto">
-    <div>
-      <div>
-        <div
-          class="items-end flex justify-end ml-auto mb-1 mt-0 max-w-[85%] text-right"
-        >
-          <div
-            class="rounded-[1.25rem] rounded-br-[0.25rem] text-white dark:text-white text-sm px-4 py-3"
-            :style="{ background: config.color }"
-          >
-            <p class="m-0">
-              {{ $t('INBOX_MGMT.WIDGET_BUILDER.BODY.USER_MESSAGE') }}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="shadow rounded-[1.25rem] rounded-bl-[0.25rem] px-4 py-3 inline-block text-sm text-n-slate-12 bg-n-background dark:bg-n-solid-3"
+  <div class="h-[calc(2rem*10)] px-4 pt-4 overflow-y-auto">
+    <div class="flex justify-end mb-4">
+      <p
+        class="max-w-[85%] px-4 py-2.5 m-0 text-sm rounded-3xl bg-n-slate-3 text-n-slate-12"
       >
-        <div>
-          <p class="m-0">
-            {{ $t('INBOX_MGMT.WIDGET_BUILDER.BODY.AGENT_MESSAGE') }}
-          </p>
-        </div>
-      </div>
+        {{ $t('INBOX_MGMT.WIDGET_BUILDER.BODY.USER_MESSAGE') }}
+      </p>
     </div>
+    <p class="m-0 text-sm leading-relaxed text-n-slate-12">
+      {{ $t('INBOX_MGMT.WIDGET_BUILDER.BODY.AGENT_MESSAGE') }}
+    </p>
   </div>
 </template>

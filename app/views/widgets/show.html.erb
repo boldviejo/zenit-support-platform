@@ -14,6 +14,7 @@
         websiteToken: '<%= @web_widget.website_token %>',
         welcomeTagline: <%= @web_widget.welcome_tagline.to_json.html_safe %>,
         welcomeTitle: '<%= @web_widget.welcome_title %>',
+        starterPrompts: <%= @web_widget.starter_prompts.to_json.html_safe %>,
         widgetColor: '<%= @web_widget.widget_color %>',
         portal: <%= @web_widget.inbox.portal.to_json.html_safe %>,
         enabledFeatures: <%= @web_widget.selected_feature_flags.to_json.html_safe %>,

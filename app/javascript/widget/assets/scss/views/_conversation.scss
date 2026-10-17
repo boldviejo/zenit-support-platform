@@ -4,18 +4,10 @@
 
 .conversation-wrap {
   .agent-message {
-    @apply items-end flex flex-row justify-start mt-0 ltr:mr-0 rtl:mr-2 mb-0.5 ltr:ml-2 rtl:ml-0 max-w-[88%];
-
-    .avatar-wrap {
-      @apply flex-shrink-0 h-6 w-6;
-
-      .user-thumbnail-box {
-        @apply -mt-8;
-      }
-    }
+    @apply flex flex-row justify-start max-w-full mt-0 mb-0.5;
 
     .message-wrap {
-      @apply flex-grow flex-shrink-0 ltr:ml-2 rtl:mr-2 max-w-[90%];
+      @apply flex-1 min-w-0 max-w-full;
     }
   }
 
@@ -24,15 +16,33 @@
       .agent-name {
         display: none;
       }
-
-      .user-thumbnail-box {
-        margin-top: 0;
-      }
     }
   }
 
   .agent-name {
-    @apply text-xs font-medium my-2 ltr:pl-0.5 rtl:pr-0.5;
+    @apply text-xs font-medium;
+  }
+
+  .chat-bubble {
+    @apply shadow-none text-[0.9375rem];
+  }
+
+  .chat-bubble.agent {
+    &:not(.is-plain) {
+      @apply rounded-2xl outline outline-1 -outline-offset-1 outline-n-weak;
+    }
+
+    &.is-plain {
+      @apply bg-transparent rounded-none p-0 leading-relaxed;
+    }
+  }
+
+  .chat-bubble.user {
+    @apply bg-n-slate-3 text-n-slate-12 rounded-3xl py-2.5;
+
+    > a {
+      @apply text-n-slate-12 underline;
+    }
   }
 
   .has-attachment {
@@ -49,35 +59,27 @@
 
   .agent-message-wrap {
     + .agent-message-wrap {
-      @apply mt-0.5;
-
-      .agent-message .chat-bubble {
-        @apply ltr:rounded-tl-[0.25rem] rtl:rounded-tr-[0.25rem];
-      }
+      @apply mt-3;
     }
 
     + .user-message-wrap {
-      @apply mt-4;
+      @apply mt-5;
     }
 
     &.has-response + .user-message-wrap {
-      @apply mt-0.5;
-
-      .chat-bubble {
-        @apply ltr:rounded-tr-[0.25rem] rtl:rounded-tl-[0.25rem];
-      }
+      @apply mt-1;
     }
 
     &.has-response + .agent-message-wrap {
-      @apply mt-4;
+      @apply mt-5;
     }
   }
 
   .user-message {
-    @apply flex items-end flex-row justify-end max-w-[85%] ltr:text-right rtl:text-left mt-0 ltr:ml-auto rtl:mr-auto ltr:mr-1 rtl:ml-1 mb-0.5;
+    @apply flex items-end flex-row justify-end max-w-[85%] ltr:text-right rtl:text-left mt-0 ltr:ml-auto rtl:mr-auto mb-0.5;
 
     .message-wrap {
-      @apply max-w-full ltr:mr-2 rtl:ml-2;
+      @apply max-w-full;
     }
 
     .in-progress {
@@ -88,37 +90,23 @@
       @apply flex items-end flex-row-reverse;
 
       .chat-bubble.user {
-        @apply bg-n-ruby-9 dark:bg-n-ruby-9 #{!important};
+        @apply bg-n-ruby-9 dark:bg-n-ruby-9 text-white #{!important};
       }
-    }
-  }
-
-  .user.has-attachment {
-    .icon-wrap {
-      @apply text-white;
-    }
-
-    .download {
-      @apply text-white;
     }
   }
 
   .user-message-wrap {
     + .user-message-wrap {
-      @apply mt-0.5;
-
-      .user-message .chat-bubble {
-        @apply ltr:rounded-tr-[0.25rem] rtl:rounded-tl-[0.25rem];
-      }
+      @apply mt-1;
     }
 
     + .agent-message-wrap {
-      @apply mt-4;
+      @apply mt-5;
     }
   }
 
   p:not(:last-child) {
-    @apply mb-4;
+    @apply mb-3;
   }
 }
 

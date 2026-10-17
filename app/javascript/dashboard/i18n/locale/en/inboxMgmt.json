@@ -112,6 +112,13 @@
           "LABEL": "Welcome Tagline",
           "PLACEHOLDER": "We make it simple to connect with us. Ask us anything, or share your feedback."
         },
+        "STARTER_PROMPTS": {
+          "LABEL": "Suggested questions",
+          "HELP_TEXT": "Shown on the widget's start screen. Clicking one sends it as the visitor's first message (up to 5).",
+          "PLACEHOLDER": "Where is my order?",
+          "ADD": "Add question",
+          "REMOVE": "Remove question"
+        },
         "CHANNEL_GREETING_MESSAGE": {
           "LABEL": "Channel greeting message",
           "PLACEHOLDER": "Acme Inc typically replies in a few hours."
@@ -1578,14 +1585,10 @@
         "IN_A_DAY": "Typically replies in a day"
       },
       "FOOTER": {
-        "START_CONVERSATION_BUTTON_TEXT": "Start Conversation",
-        "CHAT_INPUT_PLACEHOLDER": "Type your message"
+        "CHAT_INPUT_PLACEHOLDER": "Message…"
       },
       "BODY": {
-        "TEAM_AVAILABILITY": {
-          "ONLINE": "We are Online",
-          "OFFLINE": "We are away at the moment"
-        },
+        "DEFAULT_GREETING": "What can I help with today?",
         "USER_MESSAGE": "Hi",
         "AGENT_MESSAGE": "Hello"
       },

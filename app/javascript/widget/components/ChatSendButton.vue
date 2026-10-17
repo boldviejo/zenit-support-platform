@@ -1,41 +1,35 @@
-<script>
+<script setup>
+import { computed } from 'vue';
+import { getContrastingTextColor } from '@chatwoot/utils';
 import Spinner from 'shared/components/Spinner.vue';
-import FluentIcon from 'shared/components/FluentIcon/Index.vue';
 
-export default {
-  components: {
-    FluentIcon,
-    Spinner,
+const props = defineProps({
+  loading: {
+    type: Boolean,
+    default: false,
   },
-  props: {
-    loading: {
-      type: Boolean,
-      default: false,
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    color: {
-      type: String,
-      default: '#6e6f73',
-    },
+  disabled: {
+    type: Boolean,
+    default: false,
   },
-};
+  color: {
+    type: String,
+    default: '#1c2024',
+  },
+});
+
+const iconColor = computed(() => getContrastingTextColor(props.color));
 </script>
 
 <template>
   <button
     type="submit"
     :disabled="disabled"
-    class="min-h-8 min-w-8 flex items-center justify-center ms-1"
+    :aria-label="$t('COMPOSER.SEND')"
+    class="flex items-center justify-center transition-opacity rounded-full shrink-0 size-9 disabled:opacity-30"
+    :style="{ backgroundColor: color, color: iconColor }"
   >
-    <FluentIcon
-      v-if="!loading"
-      icon="send"
-      class="rtl:-scale-x-100"
-      :style="`color: ${color}`"
-    />
+    <span v-if="!loading" class="text-lg i-lucide-arrow-up" />
     <Spinner v-else size="small" />
   </button>
 </template>

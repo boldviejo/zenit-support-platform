@@ -140,7 +140,7 @@ export default {
 
 .conversation-wrap {
   flex: 1;
-  @apply px-2 pt-8 pb-2;
+  @apply px-5 pt-6 pb-2;
 }
 
 .message--loader {

@@ -20,6 +20,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  starterPrompts: {
+    type: Array,
+    default: () => [],
+  },
   websiteName: {
     type: String,
     required: true,
@@ -115,6 +119,7 @@ const replyTimeText = computed(() => {
 const getWidgetConfig = computed(() => ({
   welcomeHeading: props.welcomeHeading,
   welcomeTagline: props.welcomeTagline,
+  starterPrompts: props.starterPrompts.filter(prompt => prompt.trim()),
   websiteName: props.websiteName,
   logo: props.logo,
   isDefaultScreen: !isChatMode.value,
@@ -173,14 +178,11 @@ const handleToggleWidget = () => {
       >
         <div
           v-if="isWidgetVisible"
-          class="widget-wrapper flex flex-1 flex-shrink-0 flex-col justify-between rounded-lg shadow-md bg-n-slate-2 dark:bg-n-solid-1 h-[31.25rem] w-80 mb-4"
+          class="widget-wrapper flex flex-1 flex-shrink-0 flex-col justify-between rounded-2xl shadow-md bg-n-solid-1 h-[31.25rem] w-80 mb-4 overflow-hidden"
         >
           <WidgetHead :config="getWidgetConfig" />
           <div>
-            <WidgetBody
-              v-if="!getWidgetConfig.isDefaultScreen"
-              :config="getWidgetConfig"
-            />
+            <WidgetBody v-if="!getWidgetConfig.isDefaultScreen" />
             <WidgetFooter :config="getWidgetConfig" />
             <div class="py-2.5 flex justify-center">
               <a

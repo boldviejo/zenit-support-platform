@@ -11,7 +11,6 @@ import ReplyToChip from 'widget/components/ReplyToChip.vue';
 import DragWrapper from 'widget/components/DragWrapper.vue';
 import { BUS_EVENTS } from 'shared/constants/busEvents';
 import { emitter } from 'shared/helpers/mitt';
-import { mapGetters } from 'vuex';
 
 export default {
   name: 'UserMessage',
@@ -43,10 +42,6 @@ export default {
     };
   },
   computed: {
-    ...mapGetters({
-      widgetColor: 'appConfig/getWidgetColor',
-    }),
-
     isInProgress() {
       const { status = '' } = this.message;
       return status === 'in_progress';
@@ -125,13 +120,8 @@ export default {
               v-if="showTextBubble"
               :message="message.content"
               :status="message.status"
-              :widget-color="widgetColor"
             />
-            <div
-              v-if="hasAttachments"
-              class="chat-bubble has-attachment user"
-              :style="{ backgroundColor: widgetColor }"
-            >
+            <div v-if="hasAttachments" class="chat-bubble has-attachment user">
               <div
                 v-for="attachment in message.attachments"
                 :key="attachment.id"
@@ -155,7 +145,6 @@ export default {
                   v-else
                   :url="attachment.data_url"
                   :is-in-progress="isInProgress"
-                  :widget-color="widgetColor"
                   is-user-bubble
                 />
               </div>

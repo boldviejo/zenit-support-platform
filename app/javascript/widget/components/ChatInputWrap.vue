@@ -30,6 +30,10 @@ export default {
       type: Function,
       default: () => {},
     },
+    allowAttachments: {
+      type: Boolean,
+      default: true,
+    },
   },
   setup() {
     const {
@@ -58,10 +62,10 @@ export default {
       shouldShowEmojiPicker: 'appConfig/getShouldShowEmojiPicker',
     }),
     showAttachment() {
-      return this.canHandleAttachments && this.userInput.length === 0;
+      return this.allowAttachments && this.canHandleAttachments;
     },
-    showSendButton() {
-      return this.userInput.length > 0;
+    hasInput() {
+      return this.userInput.trim().length > 0;
     },
   },
   watch: {
@@ -134,18 +138,24 @@ export default {
 
 <template>
   <div
-    class="items-center flex ltr:pl-3 rtl:pr-3 ltr:pr-2 rtl:pl-2 rounded-[7px] transition-all duration-200 bg-n-background !shadow-[0_0_0_1px,0_0_2px_3px]"
-    :class="{
-      '!shadow-[var(--widget-color,#2781f6)]': isFocused,
-      '!shadow-n-strong dark:!shadow-n-strong': !isFocused,
-    }"
+    class="relative flex items-end gap-1 p-1.5 transition-colors duration-200 shadow-sm rounded-3xl bg-n-solid-1 outline outline-1 -outline-offset-1"
+    :class="[
+      isFocused ? 'outline-n-strong' : 'outline-n-weak',
+      { 'ltr:pl-3 rtl:pr-3': !showAttachment },
+    ]"
     @keydown.esc="hideEmojiPicker"
   >
+    <ChatAttachmentButton
+      v-if="showAttachment"
+      class="shrink-0"
+      :on-attach="onSendAttachment"
+    />
     <ResizableTextArea
       id="chat-input"
       ref="chatInput"
       v-model="userInput"
       :rows="1"
+      :min-height="2.25"
       :aria-label="$t('CHAT_PLACEHOLDER')"
       :placeholder="$t('CHAT_PLACEHOLDER')"
       class="user-message-input reset-base"
@@ -154,45 +164,38 @@ export default {
       @focus="onFocus"
       @blur="onBlur"
     />
-    <div class="relative flex items-center ltr:pl-2 rtl:pr-2">
-      <ChatAttachmentButton
-        v-if="showAttachment"
-        class="text-n-slate-12"
-        :on-attach="onSendAttachment"
+    <button
+      v-if="shouldShowEmojiPicker && hasEmojiPickerEnabled"
+      class="flex items-center justify-center rounded-full shrink-0 size-9 hover:bg-n-slate-3"
+      :aria-label="$t('EMOJI.ARIA_LABEL')"
+      @click="toggleEmojiPicker"
+    >
+      <FluentIcon
+        icon="emoji"
+        class="transition-all duration-150"
+        :class="{
+          'text-n-slate-11': !showEmojiPicker,
+          'text-n-slate-12': showEmojiPicker,
+        }"
       />
-      <button
-        v-if="shouldShowEmojiPicker && hasEmojiPickerEnabled"
-        class="flex items-center justify-center min-h-8 min-w-8"
-        :aria-label="$t('EMOJI.ARIA_LABEL')"
-        @click="toggleEmojiPicker"
-      >
-        <FluentIcon
-          icon="emoji"
-          class="transition-all duration-150"
-          :class="{
-            'text-n-slate-12': !showEmojiPicker,
-            'text-n-brand': showEmojiPicker,
-          }"
-        />
-      </button>
-      <EmojiPicker
-        v-if="shouldShowEmojiPicker && showEmojiPicker"
-        v-on-clickaway="hideEmojiPicker"
-        class="!bottom-full end-0 mb-2 max-w-[calc(100vw-3rem)]"
-        @select="onSelectEmoji"
-        @keydown.esc="hideEmojiPicker"
-      />
-      <ChatSendButton
-        v-if="showSendButton"
-        :color="widgetColor"
-        @click="handleButtonClick"
-      />
-    </div>
+    </button>
+    <EmojiPicker
+      v-if="shouldShowEmojiPicker && showEmojiPicker"
+      v-on-clickaway="hideEmojiPicker"
+      class="!bottom-full end-0 mb-2 max-w-[calc(100vw-3rem)]"
+      @select="onSelectEmoji"
+      @keydown.esc="hideEmojiPicker"
+    />
+    <ChatSendButton
+      :color="widgetColor"
+      :disabled="!hasInput"
+      @click="handleButtonClick"
+    />
   </div>
 </template>
 
 <style scoped lang="scss">
 .user-message-input {
-  @apply border-none outline-none w-full placeholder:text-n-slate-10 resize-none h-8 min-h-8 max-h-60 py-1 px-0 my-2 bg-n-background text-n-slate-12 transition-all duration-200;
+  @apply flex-1 border-none outline-none w-full placeholder:text-n-slate-10 resize-none min-h-9 max-h-60 py-1.5 px-1 m-0 bg-transparent text-n-slate-12 text-[0.9375rem] leading-6;
 }
 </style>

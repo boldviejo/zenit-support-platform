@@ -37,7 +37,7 @@ export default {
       locale: this.$root.$i18n.locale,
       hasErrorInPhoneInput: false,
       message: '',
-      formValues: {},
+      formValues: { message: this.$route?.query.message || '' },
       labels: {
         emailAddress: 'EMAIL_ADDRESS',
         fullName: 'FULL_NAME',

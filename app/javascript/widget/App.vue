@@ -373,7 +373,7 @@ export default {
 <template>
   <div
     v-if="!conversationSize && isFetchingList"
-    class="flex items-center justify-center flex-1 h-full bg-n-background"
+    class="flex items-center justify-center flex-1 h-full bg-n-solid-1"
     :class="{ dark: prefersDarkMode }"
   >
     <Spinner size="" />
@@ -386,7 +386,7 @@ export default {
       'is-widget-right': isRightAligned,
       'is-bubble-hidden': hideMessageBubble,
       'is-flat-design': isWidgetStyleFlat,
-      'bg-n-slate-2 dark:bg-n-solid-1': !isUnreadOrCampaignView,
+      'bg-n-solid-1': !isUnreadOrCampaignView,
       dark: prefersDarkMode,
     }"
   >
