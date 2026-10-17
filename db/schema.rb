@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_10_18_120000) do
+ActiveRecord::Schema[7.1].define(version: 2026_10_18_180000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -26,6 +26,19 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_18_120000) do
     t.datetime "updated_at", null: false
     t.index ["owner_type", "owner_id"], name: "index_access_tokens_on_owner_type_and_owner_id"
     t.index ["token"], name: "index_access_tokens_on_token", unique: true
+  end
+
+  create_table "account_meta_apps", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "facebook_app_id"
+    t.string "facebook_app_secret"
+    t.string "instagram_app_id"
+    t.string "instagram_app_secret"
+    t.string "verify_token", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_account_meta_apps_on_account_id", unique: true
+    t.index ["verify_token"], name: "index_account_meta_apps_on_verify_token", unique: true
   end
 
   create_table "account_saml_settings", force: :cascade do |t|

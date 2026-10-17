@@ -84,7 +84,8 @@ class Api::V1::Accounts::CallbacksController < Api::V1::Accounts::BaseController
   end
 
   def long_lived_token(omniauth_token)
-    koala = Koala::Facebook::OAuth.new(GlobalConfigService.load('FB_APP_ID', ''), GlobalConfigService.load('FB_APP_SECRET', ''))
+    credentials = MetaAppCredentials.new(Current.account)
+    koala = Koala::Facebook::OAuth.new(credentials.facebook_app_id, credentials.facebook_app_secret)
     koala.exchange_access_token_info(omniauth_token)['access_token']
   rescue StandardError => e
     Rails.logger.error "Error in long_lived_token: #{e.message}"

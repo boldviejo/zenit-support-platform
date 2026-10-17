@@ -96,6 +96,28 @@
         "LABEL": "Exclude unattended conversations",
         "HELP": "When enabled, the system will skip resolving conversations that are still waiting for an agent's reply."
       },
+      "META_APP": {
+        "TITLE": "Meta app (Facebook & Instagram)",
+        "NOTE": "Connect this account's Facebook Pages and Instagram accounts through your own Meta app. Leave it empty to use the app configured for the whole installation.",
+        "FACEBOOK_APP_ID": "Meta App ID",
+        "FACEBOOK_APP_SECRET": "Meta App secret",
+        "INSTAGRAM_APP_ID": "Instagram App ID",
+        "INSTAGRAM_APP_SECRET": "Instagram App secret",
+        "INSTAGRAM_HELP": "Shown in your Meta app under Instagram → API setup with Instagram login.",
+        "SECRET_PLACEHOLDER": "Paste the secret",
+        "SECRET_CONFIGURED": "Saved. Type a new secret to replace it",
+        "SUBMIT": "Save Meta app",
+        "WEBHOOKS_NOTE": "Use these values when you set up webhooks and Instagram login in your Meta app.",
+        "VERIFY_TOKEN": "Webhook verify token",
+        "MESSENGER_WEBHOOK_URL": "Messenger webhook callback URL",
+        "INSTAGRAM_WEBHOOK_URL": "Instagram webhook callback URL",
+        "INSTAGRAM_REDIRECT_URI": "Instagram OAuth redirect URI",
+        "API": {
+          "SUCCESS": "Meta app saved",
+          "ERROR": "Could not save the Meta app",
+          "FETCH_ERROR": "Could not load the Meta app settings"
+        }
+      },
       "AUDIO_TRANSCRIPTION": {
         "TITLE": "Transcribe Audio Messages",
         "NOTE": "Automatically transcribe audio messages in conversations. Generate a text transcript whenever an audio message is sent or received, and display it alongside the message.",

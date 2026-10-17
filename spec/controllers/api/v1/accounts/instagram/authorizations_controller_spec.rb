@@ -36,6 +36,8 @@ RSpec.describe 'Instagram Authorization API', type: :request do
           extend InstagramConcern
           extend Instagram::IntegrationHelper
         end
+        oauth_account = account
+        instagram_service.define_singleton_method(:instagram_account) { oauth_account }
         frontend_url = ENV.fetch('FRONTEND_URL', 'http://localhost:3000')
         response_url = instagram_service.instagram_client.auth_code.authorize_url(
           {

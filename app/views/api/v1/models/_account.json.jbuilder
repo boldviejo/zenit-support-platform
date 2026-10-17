@@ -35,3 +35,8 @@ json.name @account.name
 json.support_email @account.support_email
 json.status @account.status
 json.cache_keys @account.cache_keys
+# Public app ids of the account's own Meta app; the dashboard falls back to the installation app when blank
+json.meta_app do
+  json.facebook_app_id resource.meta_app&.facebook_app_id
+  json.instagram_app_id resource.meta_app&.instagram_app_id
+end

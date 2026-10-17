@@ -51,7 +51,11 @@ describe('useFacebookPageConnect', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     window.chatwootConfig = { fbAppId: 'fb-app', fbApiVersion: 'v22.0' };
-    useMapGetter.mockReturnValue({ value: ACCOUNT_ID });
+    useMapGetter.mockImplementation(getter =>
+      getter === 'accounts/getAccount'
+        ? { value: () => ({ id: ACCOUNT_ID }) }
+        : { value: ACCOUNT_ID }
+    );
     setupFacebookSdk.mockResolvedValue();
     ChannelApi.fetchFacebookPages.mockResolvedValue(pagesResponse);
     stubLogin(connected);

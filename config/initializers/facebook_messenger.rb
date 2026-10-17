@@ -1,13 +1,12 @@
 # ref: https://github.com/jgorset/facebook-messenger#make-a-configuration-provider
 class ChatwootFbProvider < Facebook::Messenger::Configuration::Providers::Base
-  CHANNEL_APP_SECRET_KEYS = %w[app_secret app_secret_key client_secret api_secret].freeze
-
-  def valid_verify_token?(_verify_token)
-    GlobalConfigService.load('FB_VERIFY_TOKEN', '')
+  def valid_verify_token?(verify_token)
+    MetaAppCredentials.valid_verify_token?(verify_token)
   end
 
+  # Signs webhooks and send API calls with the secret of the Meta app the page's account uses.
   def app_secret_for(page_id)
-    channel_app_secret_for(page_id).presence || GlobalConfigService.load('FB_APP_SECRET', '')
+    MetaAppCredentials.new(Channel::FacebookPage.where(page_id: page_id).last&.account).facebook_app_secret
   end
 
   def access_token_for(page_id)
@@ -15,27 +14,6 @@ class ChatwootFbProvider < Facebook::Messenger::Configuration::Providers::Base
   end
 
   private
-
-  def channel_app_secret_for(page_id)
-    channel = Channel::FacebookPage.where(page_id: page_id).last
-    return if channel.blank?
-
-    channel_app_secret_candidates(channel).first
-  end
-
-  def channel_app_secret_candidates(channel)
-    secrets = []
-    secrets << channel.app_secret if channel.respond_to?(:app_secret)
-    secrets.concat(provider_config_app_secrets(channel))
-    secrets.compact_blank.uniq
-  end
-
-  def provider_config_app_secrets(channel)
-    return [] unless channel.respond_to?(:provider_config)
-
-    provider_config = channel.provider_config.to_h.with_indifferent_access
-    CHANNEL_APP_SECRET_KEYS.filter_map { |key| provider_config[key].presence }
-  end
 
   def bot
     Chatwoot::Bot

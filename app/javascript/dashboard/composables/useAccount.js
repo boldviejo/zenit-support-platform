@@ -1,6 +1,7 @@
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useMapGetter, useStore } from './store';
+import { getFacebookAppId, getInstagramAppId } from 'dashboard/helper/metaApp';
 
 /**
  * Composable for account-related operations.
@@ -29,6 +30,10 @@ export function useAccount() {
     return Number(route.params.accountId);
   });
   const currentAccount = computed(() => getAccountFn.value(accountId.value));
+  const facebookAppId = computed(() => getFacebookAppId(currentAccount.value));
+  const instagramAppId = computed(() =>
+    getInstagramAppId(currentAccount.value)
+  );
 
   /**
    * Generates an account-scoped URL.
@@ -66,6 +71,8 @@ export function useAccount() {
     accountId,
     route,
     currentAccount,
+    facebookAppId,
+    instagramAppId,
     accountScopedUrl,
     accountScopedRoute,
     isCloudFeatureEnabled,

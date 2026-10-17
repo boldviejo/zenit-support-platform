@@ -15,15 +15,11 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['channelItemClick']);
-const { isOnChatwootCloud } = useAccount();
+const { isOnChatwootCloud, facebookAppId, instagramAppId } = useAccount();
 
-const hasFbConfigured = computed(() => {
-  return window.chatwootConfig?.fbAppId;
-});
+const hasFbConfigured = computed(() => !!facebookAppId.value);
 
-const hasInstagramConfigured = computed(() => {
-  return window.chatwootConfig?.instagramAppId;
-});
+const hasInstagramConfigured = computed(() => !!instagramAppId.value);
 
 const hasTiktokConfigured = computed(() => {
   return window.chatwootConfig?.tiktokAppId;

@@ -2,24 +2,40 @@ require 'rails_helper'
 
 describe Integrations::Facebook::MessageParser do
   describe '#sent_from_chatwoot_app?' do
+    let(:facebook_page) { create(:channel_facebook_page) }
+
     before do
+      allow(Facebook::Messenger::Subscriptions).to receive(:subscribe).and_return(true)
+      allow(GlobalConfigService).to receive(:load).and_call_original
       allow(GlobalConfigService).to receive(:load).with('FB_APP_ID', '').and_return('1134227931892276')
     end
 
     it 'returns true when the echo app_id is a numeric value matching FB_APP_ID' do
       # Meta sends app_id as a JSON number in echo payloads
-      response = described_class.new({ messaging: { message: { is_echo: true, app_id: 1_134_227_931_892_276 } } }.to_json)
+      response = described_class.new({ messaging: { sender: { id: facebook_page.page_id }, message: { is_echo: true, app_id: 1_134_227_931_892_276 } } }.to_json)
       expect(response.sent_from_chatwoot_app?).to be true
     end
 
     it 'returns true when the echo app_id is a string matching FB_APP_ID' do
-      response = described_class.new({ messaging: { message: { is_echo: true, app_id: '1134227931892276' } } }.to_json)
+      response = described_class.new({ messaging: { sender: { id: facebook_page.page_id }, message: { is_echo: true, app_id: '1134227931892276' } } }.to_json)
       expect(response.sent_from_chatwoot_app?).to be true
     end
 
     it 'returns false when the echo app_id does not match FB_APP_ID' do
-      response = described_class.new({ messaging: { message: { is_echo: true, app_id: 999_999_999_999_999 } } }.to_json)
+      response = described_class.new({ messaging: { sender: { id: facebook_page.page_id }, message: { is_echo: true, app_id: 999_999_999_999_999 } } }.to_json)
       expect(response.sent_from_chatwoot_app?).to be false
+    end
+
+    it 'compares against the Meta app of the page account when it has one' do
+      create(:account_meta_app, account: facebook_page.account, facebook_app_id: '555', facebook_app_secret: 'secret')
+
+      own_app_echo = described_class.new({ messaging: { sender: { id: facebook_page.page_id }, message: { is_echo: true, app_id: 555 } } }.to_json)
+      global_app_echo = described_class.new(
+        { messaging: { sender: { id: facebook_page.page_id }, message: { is_echo: true, app_id: 1_134_227_931_892_276 } } }.to_json
+      )
+
+      expect(own_app_echo.sent_from_chatwoot_app?).to be true
+      expect(global_app_echo.sent_from_chatwoot_app?).to be false
     end
 
     it 'returns false when app_id is absent from the payload' do

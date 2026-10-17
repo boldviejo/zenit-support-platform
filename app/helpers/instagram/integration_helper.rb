@@ -7,9 +7,10 @@ module Instagram::IntegrationHelper
   # @param return_to [String, nil] Optional onboarding return hint
   # @return [String, nil] The encoded JWT token or nil if client secret is missing
   def generate_instagram_token(account_id, return_to = nil)
-    return if client_secret.blank?
+    secret = instagram_app_secret_for(account_id)
+    return if secret.blank?
 
-    JWT.encode(token_payload(account_id, return_to), client_secret, 'HS256')
+    JWT.encode(token_payload(account_id, return_to), secret, 'HS256')
   rescue StandardError => e
     Rails.logger.error("Failed to generate Instagram token: #{e.message}")
     nil
@@ -26,22 +27,33 @@ module Instagram::IntegrationHelper
   # @param token [String] The JWT token to verify
   # @return [Integer, nil] The account ID from the token or nil if invalid
   def verify_instagram_token(token)
-    return if token.blank? || client_secret.blank?
-
-    decode_token(token, client_secret)&.dig('sub')
+    decode_verified_token(token)&.dig('sub')
   end
 
   # Reads the onboarding return hint from a Instagram JWT token, if present.
   def instagram_token_return_to(token)
-    return if token.blank? || client_secret.blank?
-
-    decode_token(token, client_secret)&.dig('return_to')
+    decode_verified_token(token)&.dig('return_to')
   end
 
   private
 
-  def client_secret
-    @client_secret ||= GlobalConfigService.load('INSTAGRAM_APP_SECRET', nil)
+  # The token is signed with the Instagram secret of the account's Meta app, so the
+  # unverified account id only picks the secret; the signature is then verified with it.
+  def decode_verified_token(token)
+    return if token.blank?
+
+    account_id = JWT.decode(token, nil, false).first['sub']
+    secret = instagram_app_secret_for(account_id)
+    return if secret.blank?
+
+    decode_token(token, secret)
+  rescue JWT::DecodeError => e
+    Rails.logger.error("Unexpected error verifying Instagram token: #{e.message}")
+    nil
+  end
+
+  def instagram_app_secret_for(account_id)
+    MetaAppCredentials.new(Account.find_by(id: account_id)).instagram_app_secret
   end
 
   def decode_token(token, secret)

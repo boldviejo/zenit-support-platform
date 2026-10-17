@@ -13,6 +13,8 @@ export function useChannelConfig() {
     isCloudFeatureEnabled,
     isOnChatwootCloud,
     isMetaInboxCreationDisabled,
+    facebookAppId,
+    instagramAppId,
   } = useAccount();
   const installationConfig = window.chatwootConfig || {};
 
@@ -27,10 +29,10 @@ export function useChannelConfig() {
       installationConfig.whatsappAppId !== 'none' &&
       Boolean(installationConfig.whatsappConfigurationId),
     facebook: () =>
-      !isMetaInboxCreationDisabled.value && Boolean(installationConfig.fbAppId),
+      !isMetaInboxCreationDisabled.value && Boolean(facebookAppId.value),
     instagram: () =>
       !isMetaInboxCreationDisabled.value &&
-      Boolean(installationConfig.instagramAppId) &&
+      Boolean(instagramAppId.value) &&
       isCloudFeatureEnabled(FEATURE_FLAGS.CHANNEL_INSTAGRAM),
     tiktok: () => Boolean(installationConfig.tiktokAppId),
     gmail: () => Boolean(installationConfig.googleOAuthClientId),

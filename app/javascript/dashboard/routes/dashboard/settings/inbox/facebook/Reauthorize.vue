@@ -2,6 +2,7 @@
 /* global FB */
 import InboxReconnectionRequired from '../components/InboxReconnectionRequired.vue';
 import { useAlert } from 'dashboard/composables';
+import { useAccount } from 'dashboard/composables/useAccount';
 
 import { loadScript } from 'dashboard/helper/DOMHelpers';
 import { buildFacebookLoginScopes } from 'dashboard/helper/facebookScopes';
@@ -16,6 +17,10 @@ export default {
       type: Object,
       required: true,
     },
+  },
+  setup() {
+    const { facebookAppId } = useAccount();
+    return { facebookAppId };
   },
   computed: {
     inboxId() {
@@ -33,7 +38,7 @@ export default {
   methods: {
     runFBInit() {
       FB.init({
-        appId: window.chatwootConfig.fbAppId,
+        appId: this.facebookAppId,
         xfbml: true,
         version: window.chatwootConfig.fbApiVersion,
         status: true,

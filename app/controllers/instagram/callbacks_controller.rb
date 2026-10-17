@@ -173,6 +173,10 @@ class Instagram::CallbacksController < ApplicationController
     @account ||= Account.find(account_id)
   end
 
+  def instagram_account
+    account
+  end
+
   def provider_name
     'instagram'
   end

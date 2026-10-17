@@ -2,6 +2,7 @@ import { ref } from 'vue';
 import { useMapGetter } from 'dashboard/composables/store';
 import ChannelApi from 'dashboard/api/channels';
 import { buildFacebookLoginScopes } from 'dashboard/helper/facebookScopes';
+import { getFacebookAppId } from 'dashboard/helper/metaApp';
 import { setupFacebookSdk } from 'dashboard/routes/dashboard/settings/inbox/channels/whatsapp/utils';
 
 // Headless half of the Facebook Page connect flow: load the Meta SDK, run
@@ -16,6 +17,7 @@ import { setupFacebookSdk } from 'dashboard/routes/dashboard/settings/inbox/chan
 // later, after activation has expired, and the popup gets blocked.
 export function useFacebookPageConnect() {
   const accountId = useMapGetter('getCurrentAccountId');
+  const getAccount = useMapGetter('accounts/getAccount');
   const isAuthenticating = ref(false);
 
   let sdkSetupPromise = null;
@@ -25,7 +27,7 @@ export function useFacebookPageConnect() {
   const preloadSdk = () => {
     if (!sdkSetupPromise) {
       sdkSetupPromise = setupFacebookSdk(
-        window.chatwootConfig?.fbAppId,
+        getFacebookAppId(getAccount.value(accountId.value)),
         window.chatwootConfig?.fbApiVersion
       ).catch(error => {
         sdkSetupPromise = null;

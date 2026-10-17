@@ -1,7 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe InstagramConcern do
-  let(:dummy_class) { Class.new { include InstagramConcern } }
+  let(:dummy_class) do
+    Class.new do
+      include InstagramConcern
+
+      def instagram_account; end
+    end
+  end
   let(:dummy_instance) { dummy_class.new }
   let(:client_id) { 'test_client_id' }
   let(:client_secret) { 'test_client_secret' }

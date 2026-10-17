@@ -68,8 +68,13 @@ class Integrations::Facebook::MessageParser
     @messaging.dig('message', 'app_id')
   end
 
+  # Echoes are sent by the page (sender_id), so compare against the Meta app of the page's account
   def sent_from_chatwoot_app?
-    app_id.present? && app_id.to_s == GlobalConfigService.load('FB_APP_ID', '').to_s
+    return false if app_id.blank?
+
+    Channel::FacebookPage.where(page_id: sender_id).any? do |page|
+      MetaAppCredentials.new(page.account).facebook_app_id.to_s == app_id.to_s
+    end
   end
 
   def in_reply_to_external_id

@@ -17,12 +17,13 @@ module InstagramConcern
 
   private
 
+  # Including controllers define `instagram_account`, the account whose Meta app runs the OAuth flow
   def client_id
-    GlobalConfigService.load('INSTAGRAM_APP_ID', nil)
+    MetaAppCredentials.new(instagram_account).instagram_app_id
   end
 
   def client_secret
-    GlobalConfigService.load('INSTAGRAM_APP_SECRET', nil)
+    MetaAppCredentials.new(instagram_account).instagram_app_secret
   end
 
   def exchange_for_long_lived_token(short_lived_token)

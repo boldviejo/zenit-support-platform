@@ -35,11 +35,9 @@ class Webhooks::InstagramController < ActionController::API
     end
   end
 
+  # Accepts the installation tokens (IG_VERIFY_TOKEN, INSTAGRAM_VERIFY_TOKEN) and any account's own Meta app token
   def valid_token?(token)
-    # Validates against both IG_VERIFY_TOKEN (Instagram channel via Facebook page) and
-    # INSTAGRAM_VERIFY_TOKEN (Instagram channel via direct Instagram login)
-    token == GlobalConfigService.load('IG_VERIFY_TOKEN', '') ||
-      token == GlobalConfigService.load('INSTAGRAM_VERIFY_TOKEN', '')
+    MetaAppCredentials.valid_verify_token?(token)
   end
 
   def meta_app_secrets
@@ -51,7 +49,10 @@ class Webhooks::InstagramController < ActionController::API
   end
 
   def instagram_channel_meta_app_secrets
-    instagram_channels_from_payload.flat_map { |channel| channel_meta_app_secrets(channel) }
+    instagram_channels_from_payload.flat_map do |channel|
+      credentials = MetaAppCredentials.new(channel.account)
+      [credentials.instagram_app_secret, credentials.facebook_app_secret]
+    end
   end
 
   def instagram_channels_from_payload
