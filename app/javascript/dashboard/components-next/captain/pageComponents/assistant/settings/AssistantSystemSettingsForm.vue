@@ -5,6 +5,8 @@ import { useVuelidate } from '@vuelidate/core';
 import { maxValue, minLength, minValue, required } from '@vuelidate/validators';
 import { FEATURE_FLAGS } from 'dashboard/featureFlags';
 import { useAccount } from 'dashboard/composables/useAccount';
+import { useAlert } from 'dashboard/composables';
+import { stripInlineBase64Images } from 'dashboard/helper/editorHelper';
 
 import Banner from 'dashboard/components-next/banner/Banner.vue';
 import Button from 'dashboard/components-next/button/Button.vue';
@@ -12,6 +14,7 @@ import Editor from 'dashboard/components-next/Editor/Editor.vue';
 import RadioCard from 'dashboard/components-next/radioCard/RadioCard.vue';
 import SettingsToggleSection from 'dashboard/components-next/Settings/SettingsToggleSection.vue';
 import Switch from 'dashboard/components-next/switch/Switch.vue';
+import WootMessageEditor from 'dashboard/components/widgets/WootWriter/Editor.vue';
 import DurationSelect from './DurationSelect.vue';
 
 const props = defineProps({
@@ -40,6 +43,7 @@ const initialState = {
   autoResolveMode: 'evaluated',
   inactivityThresholdMinutes: 60,
   sendInactivityResolutionMessage: true,
+  messageSignature: '',
 };
 
 const state = reactive({ ...initialState });
@@ -116,6 +120,7 @@ const updateStateFromAssistant = assistant => {
   state.inactivityThresholdMinutes = config.auto_resolve_after ?? 60;
   state.sendInactivityResolutionMessage =
     config.send_inactivity_resolution_message ?? true;
+  state.messageSignature = config.message_signature ?? '';
 };
 
 const fieldsToValidate = () => {
@@ -137,10 +142,21 @@ const handleSystemMessagesUpdate = async () => {
   ).then(results => results.every(Boolean));
   if (!isValid) return;
 
+  const { sanitizedContent, hasInlineImages } = stripInlineBase64Images(
+    state.messageSignature || ''
+  );
+  state.messageSignature = sanitizedContent.trim();
+  if (hasInlineImages) {
+    useAlert(
+      t('CAPTAIN.ASSISTANTS.FORM.MESSAGE_SIGNATURE.INLINE_IMAGE_WARNING')
+    );
+  }
+
   const payload = {
     config: {
       ...props.assistant.config,
       handoff_message: state.handoffMessage,
+      message_signature: state.messageSignature,
     },
   };
 
@@ -321,6 +337,26 @@ watch(
           :message="formErrors.handoffMessage"
           :message-type="formErrors.handoffMessage ? 'error' : 'info'"
           class="z-0 [&_.editor-wrapper]:!min-h-32 [&_.editor-wrapper]:!border-0 [&_.editor-wrapper]:!bg-transparent [&_.editor-wrapper]:!p-0"
+        />
+      </template>
+    </SettingsToggleSection>
+
+    <SettingsToggleSection
+      hide-toggle
+      :header="t('CAPTAIN.ASSISTANTS.FORM.MESSAGE_SIGNATURE.LABEL')"
+      :description="t('CAPTAIN.ASSISTANTS.FORM.MESSAGE_SIGNATURE.DESCRIPTION')"
+    >
+      <template #editor>
+        <WootMessageEditor
+          id="captain-message-signature-input"
+          v-model="state.messageSignature"
+          class="message-editor h-[10rem] !px-3"
+          is-format-mode
+          :placeholder="
+            t('CAPTAIN.ASSISTANTS.FORM.MESSAGE_SIGNATURE.PLACEHOLDER')
+          "
+          channel-type="Context::MessageSignature"
+          :enable-suggestions="false"
         />
       </template>
     </SettingsToggleSection>

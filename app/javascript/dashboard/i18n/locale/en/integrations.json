@@ -799,6 +799,12 @@
           "LABEL": "Handoff message",
           "PLACEHOLDER": "Enter handoff message"
         },
+        "MESSAGE_SIGNATURE": {
+          "LABEL": "Email signature",
+          "DESCRIPTION": "Added at the end of every reply this assistant sends in email inboxes, just like an agent's signature.",
+          "PLACEHOLDER": "Enter the email signature for this assistant",
+          "INLINE_IMAGE_WARNING": "Pasted inline images were removed. Please use the image upload button to add images to the signature."
+        },
         "RESOLUTION_MESSAGE": {
           "LABEL": "Resolution Message",
           "PLACEHOLDER": "Enter resolution message"

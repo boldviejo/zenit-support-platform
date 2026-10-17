@@ -51,7 +51,8 @@ class Captain::Assistant < ApplicationRecord
                                     dependent: :nullify, inverse_of: :ai_assignee
 
   store_accessor :config, :temperature, :feature_faq, :feature_memory, :feature_contact_attributes, :product_name,
-                 :auto_resolve_mode, :auto_resolve_after, :send_inactivity_resolution_message, :response_window
+                 :auto_resolve_mode, :auto_resolve_after, :send_inactivity_resolution_message, :response_window,
+                 :message_signature
 
   before_validation :set_default_auto_resolve_mode, on: :create
   before_validation :normalize_auto_resolve_after
