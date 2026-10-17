@@ -13,6 +13,7 @@
 #  custom_attributes      :jsonb
 #  display_name           :string
 #  email                  :string
+#  email_signature_html   :text
 #  encrypted_password     :string           default(""), not null
 #  last_sign_in_at        :datetime
 #  last_sign_in_ip        :string

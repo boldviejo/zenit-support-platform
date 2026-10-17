@@ -11,6 +11,7 @@ import { parseBoolean } from '@chatwoot/utils';
 import UserProfilePicture from './UserProfilePicture.vue';
 import UserBasicDetails from './UserBasicDetails.vue';
 import MessageSignature from './MessageSignature.vue';
+import EmailSignatureHtml from './EmailSignatureHtml.vue';
 import FontSize from './FontSize.vue';
 import UserLanguageSelect from './UserLanguageSelect.vue';
 import ChangePassword from './ChangePassword.vue';
@@ -31,6 +32,7 @@ import {
 export default {
   components: {
     MessageSignature,
+    EmailSignatureHtml,
     SectionLayout,
     FontSize,
     UserLanguageSelect,
@@ -67,6 +69,7 @@ export default {
       displayName: '',
       email: '',
       messageSignature: '',
+      emailSignatureHtml: '',
       hotKeys: [
         {
           key: 'enter',
@@ -135,6 +138,7 @@ export default {
       this.avatarUrl = this.currentUser.avatar_url;
       this.displayName = this.currentUser.display_name;
       this.messageSignature = this.currentUser.message_signature;
+      this.emailSignatureHtml = this.currentUser.email_signature_html;
     },
     async dispatchUpdate(payload, successMessage, errorMessage) {
       let alertMessage = '';
@@ -185,6 +189,15 @@ export default {
       );
 
       await this.dispatchUpdate(payload, successMessage, errorMessage);
+    },
+    async updateEmailSignatureHtml(signature) {
+      await this.dispatchUpdate(
+        { email_signature_html: signature },
+        this.$t(
+          'PROFILE_SETTINGS.FORM.EMAIL_SIGNATURE_HTML_SECTION.API_SUCCESS'
+        ),
+        this.$t('PROFILE_SETTINGS.FORM.EMAIL_SIGNATURE_HTML_SECTION.API_ERROR')
+      );
     },
     updateProfilePicture({ file, url }) {
       this.avatarFile = file;
@@ -281,6 +294,18 @@ export default {
       <MessageSignature
         :message-signature="messageSignature"
         @update-signature="updateSignature"
+      />
+    </SectionLayout>
+    <SectionLayout
+      with-border
+      :title="$t('PROFILE_SETTINGS.FORM.EMAIL_SIGNATURE_HTML_SECTION.TITLE')"
+      :description="
+        $t('PROFILE_SETTINGS.FORM.EMAIL_SIGNATURE_HTML_SECTION.NOTE')
+      "
+    >
+      <EmailSignatureHtml
+        :email-signature-html="emailSignatureHtml"
+        @update-signature="updateEmailSignatureHtml"
       />
     </SectionLayout>
     <SectionLayout

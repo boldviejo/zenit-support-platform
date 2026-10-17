@@ -1,4 +1,9 @@
 {
+  "EMAIL_SIGNATURE_HTML": {
+    "PLACEHOLDER": "Paste your signature HTML here",
+    "PREVIEW": "Preview",
+    "EMPTY_PREVIEW": "Your signature will appear here"
+  },
   "PROFILE_SETTINGS": {
     "LINK": "Profile Settings",
     "TITLE": "Profile Settings",
@@ -59,6 +64,13 @@
           "UPDATE_ERROR": "There is an error while updating the language settings, please try again",
           "USE_ACCOUNT_DEFAULT": "Use account default"
         }
+      },
+      "EMAIL_SIGNATURE_HTML_SECTION": {
+        "TITLE": "Email signature (HTML)",
+        "NOTE": "Paste the HTML of your email signature. It is added to the end of every email you send from an email inbox, with its design intact. When set, it replaces your message signature in emails.",
+        "BTN_TEXT": "Save email signature",
+        "API_ERROR": "Couldn't save email signature! Try again",
+        "API_SUCCESS": "Email signature saved successfully"
       },
       "MESSAGE_SIGNATURE_SECTION": {
         "TITLE": "Personal message signature",

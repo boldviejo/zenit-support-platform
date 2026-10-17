@@ -5,8 +5,6 @@ import { useVuelidate } from '@vuelidate/core';
 import { maxValue, minLength, minValue, required } from '@vuelidate/validators';
 import { FEATURE_FLAGS } from 'dashboard/featureFlags';
 import { useAccount } from 'dashboard/composables/useAccount';
-import { useAlert } from 'dashboard/composables';
-import { stripInlineBase64Images } from 'dashboard/helper/editorHelper';
 
 import Banner from 'dashboard/components-next/banner/Banner.vue';
 import Button from 'dashboard/components-next/button/Button.vue';
@@ -14,7 +12,7 @@ import Editor from 'dashboard/components-next/Editor/Editor.vue';
 import RadioCard from 'dashboard/components-next/radioCard/RadioCard.vue';
 import SettingsToggleSection from 'dashboard/components-next/Settings/SettingsToggleSection.vue';
 import Switch from 'dashboard/components-next/switch/Switch.vue';
-import WootMessageEditor from 'dashboard/components/widgets/WootWriter/Editor.vue';
+import EmailSignatureHtmlEditor from 'dashboard/components-next/EmailSignature/EmailSignatureHtmlEditor.vue';
 import DurationSelect from './DurationSelect.vue';
 
 const props = defineProps({
@@ -43,7 +41,7 @@ const initialState = {
   autoResolveMode: 'evaluated',
   inactivityThresholdMinutes: 60,
   sendInactivityResolutionMessage: true,
-  messageSignature: '',
+  emailSignatureHtml: '',
 };
 
 const state = reactive({ ...initialState });
@@ -120,7 +118,7 @@ const updateStateFromAssistant = assistant => {
   state.inactivityThresholdMinutes = config.auto_resolve_after ?? 60;
   state.sendInactivityResolutionMessage =
     config.send_inactivity_resolution_message ?? true;
-  state.messageSignature = config.message_signature ?? '';
+  state.emailSignatureHtml = config.email_signature_html ?? '';
 };
 
 const fieldsToValidate = () => {
@@ -142,21 +140,11 @@ const handleSystemMessagesUpdate = async () => {
   ).then(results => results.every(Boolean));
   if (!isValid) return;
 
-  const { sanitizedContent, hasInlineImages } = stripInlineBase64Images(
-    state.messageSignature || ''
-  );
-  state.messageSignature = sanitizedContent.trim();
-  if (hasInlineImages) {
-    useAlert(
-      t('CAPTAIN.ASSISTANTS.FORM.MESSAGE_SIGNATURE.INLINE_IMAGE_WARNING')
-    );
-  }
-
   const payload = {
     config: {
       ...props.assistant.config,
       handoff_message: state.handoffMessage,
-      message_signature: state.messageSignature,
+      email_signature_html: state.emailSignatureHtml.trim(),
     },
   };
 
@@ -343,20 +331,16 @@ watch(
 
     <SettingsToggleSection
       hide-toggle
-      :header="t('CAPTAIN.ASSISTANTS.FORM.MESSAGE_SIGNATURE.LABEL')"
-      :description="t('CAPTAIN.ASSISTANTS.FORM.MESSAGE_SIGNATURE.DESCRIPTION')"
+      :header="t('CAPTAIN.ASSISTANTS.FORM.EMAIL_SIGNATURE_HTML.LABEL')"
+      :description="
+        t('CAPTAIN.ASSISTANTS.FORM.EMAIL_SIGNATURE_HTML.DESCRIPTION')
+      "
     >
       <template #editor>
-        <WootMessageEditor
-          id="captain-message-signature-input"
-          v-model="state.messageSignature"
-          class="message-editor h-[10rem] !px-3"
-          is-format-mode
-          :placeholder="
-            t('CAPTAIN.ASSISTANTS.FORM.MESSAGE_SIGNATURE.PLACEHOLDER')
-          "
-          channel-type="Context::MessageSignature"
-          :enable-suggestions="false"
+        <EmailSignatureHtmlEditor
+          id="captain-email-signature-html-input"
+          v-model="state.emailSignatureHtml"
+          class="px-4 pb-4"
         />
       </template>
     </SettingsToggleSection>

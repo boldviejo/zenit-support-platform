@@ -85,6 +85,10 @@ export const getters = {
     return messageSignature || '';
   },
 
+  getEmailSignatureHtml($state) {
+    return $state.currentUser.email_signature_html || '';
+  },
+
   getCurrentAccount($state, $getters) {
     const { accounts = [] } = $state.currentUser;
     const [currentAccount = {}] = accounts.filter(

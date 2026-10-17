@@ -23,7 +23,7 @@ const assistant = {
     auto_resolve_mode: 'evaluated',
     auto_resolve_after: 75,
     send_inactivity_resolution_message: true,
-    message_signature: 'The Chatwoot team',
+    email_signature_html: '<p>The Chatwoot team</p>',
   },
 };
 

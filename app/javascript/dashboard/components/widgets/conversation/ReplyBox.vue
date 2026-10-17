@@ -184,9 +184,16 @@ export default {
     };
   },
   computed: {
+    // An HTML email signature is added server-side, so it replaces the regular one in emails.
+    messageSignature() {
+      return this.isAnEmailChannel && this.emailSignatureHtml
+        ? ''
+        : this.markdownSignature;
+    },
     ...mapGetters({
       currentChat: 'getSelectedChat',
-      messageSignature: 'getMessageSignature',
+      markdownSignature: 'getMessageSignature',
+      emailSignatureHtml: 'getEmailSignatureHtml',
       currentUser: 'getCurrentUser',
       lastEmail: 'getLastEmailInSelectedChat',
       globalConfig: 'globalConfig/get',

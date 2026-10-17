@@ -9,6 +9,7 @@ import { ExceptionWithMessage } from 'shared/helpers/CustomErrors';
 import { debounce } from '@chatwoot/utils';
 import { emitter } from 'shared/helpers/mitt';
 import { BUS_EVENTS } from 'shared/constants/busEvents';
+import { INBOX_TYPES } from 'dashboard/helper/inbox';
 import {
   createContactSearcher,
   createNewContact,
@@ -69,7 +70,15 @@ const contactsUiFlags = useMapGetter('contacts/getUIFlags');
 const currentUser = useMapGetter('getCurrentUser');
 const globalConfig = useMapGetter('globalConfig/get');
 const uiFlags = useMapGetter('contactConversations/getUIFlags');
-const messageSignature = useMapGetter('getMessageSignature');
+const markdownSignature = useMapGetter('getMessageSignature');
+const emailSignatureHtml = useMapGetter('getEmailSignatureHtml');
+// An HTML email signature is added server-side, so it replaces the regular one in emails.
+const messageSignature = computed(() =>
+  targetInbox.value?.channelType === INBOX_TYPES.EMAIL &&
+  emailSignatureHtml.value
+    ? ''
+    : markdownSignature.value
+);
 const inboxesList = useMapGetter('inboxes/getInboxes');
 
 const sendWithSignature = computed(() =>

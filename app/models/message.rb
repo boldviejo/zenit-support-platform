@@ -65,6 +65,7 @@ class Message < ApplicationRecord
 
   before_validation :ensure_content_type
   before_validation :prevent_message_flooding
+  before_validation :append_email_signature_html, on: :create, if: :email_signature_html_applicable?
   before_save :ensure_processed_message_content
   before_save :ensure_in_reply_to
 
@@ -320,6 +321,20 @@ class Message < ApplicationRecord
 
   def ensure_content_type
     self.content_type ||= Message.content_types[:text]
+  end
+
+  # Agents and Captain assistants can have a raw HTML email signature. It goes into the email HTML
+  # (what the mailer sends and the dashboard renders), not into the text content.
+  def email_signature_html_applicable?
+    outgoing? && !private? && inbox&.email? && sender.try(:email_signature_html).present?
+  end
+
+  def append_email_signature_html
+    email = (content_attributes[:email] || {}).with_indifferent_access
+    body = email.dig(:html_content, :reply).presence || ChatwootMarkdownRenderer.new(content.to_s).render_message(hardbreaks: true).to_s
+    signed = "#{body}#{sender.email_signature_html}"
+    email[:html_content] = (email[:html_content] || {}).merge(full: signed, reply: signed)
+    self.content_attributes = content_attributes.merge(email: email)
   end
 
   def execute_after_create_commit_callbacks
