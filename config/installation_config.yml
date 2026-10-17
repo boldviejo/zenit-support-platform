@@ -22,6 +22,10 @@
   value: '/brand-assets/logo_thumbnail.svg'
   display_title: 'Logo Thumbnail'
   description: 'The thumbnail that would be used for favicon (512px X 512px)'
+- name: LOGO_THUMBNAIL_DARK
+  value: '/brand-assets/logo_thumbnail_dark.svg'
+  display_title: 'Logo Thumbnail Dark Mode'
+  description: 'The thumbnail used in dark mode, e.g. in the sidebar and "Powered by" links (512px X 512px)'
 - name: LOGO
   value: '/brand-assets/logo.svg'
   display_title: 'Logo'

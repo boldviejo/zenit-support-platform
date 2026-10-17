@@ -2,16 +2,21 @@
 import { useAttrs } from 'vue';
 import { useMapGetter } from 'dashboard/composables/store';
 
+defineOptions({ inheritAttrs: false });
+
 const attrs = useAttrs();
 const globalConfig = useMapGetter('globalConfig/get');
 </script>
 
 <template>
-  <img
-    v-if="globalConfig.logoThumbnail"
-    v-bind="attrs"
-    :src="globalConfig.logoThumbnail"
-  />
+  <template v-if="globalConfig.logoThumbnail">
+    <img v-bind="attrs" class="dark:hidden" :src="globalConfig.logoThumbnail" />
+    <img
+      v-bind="attrs"
+      class="hidden dark:block"
+      :src="globalConfig.logoThumbnailDark || globalConfig.logoThumbnail"
+    />
+  </template>
   <svg
     v-else
     v-once

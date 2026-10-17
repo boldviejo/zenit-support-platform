@@ -187,8 +187,14 @@ const handleToggleWidget = () => {
                 class="items-center gap-0.5 text-n-slate-11 cursor-pointer flex filter grayscale opacity-90 hover:grayscale-0 hover:opacity-100 text-xxs"
               >
                 <img
-                  class="max-w-2.5 max-h-2.5"
+                  class="max-w-2.5 max-h-2.5 dark:hidden"
                   :src="globalConfig.logoThumbnail"
+                />
+                <img
+                  class="max-w-2.5 max-h-2.5 hidden dark:block"
+                  :src="
+                    globalConfig.logoThumbnailDark || globalConfig.logoThumbnail
+                  "
                 />
                 <span>
                   {{

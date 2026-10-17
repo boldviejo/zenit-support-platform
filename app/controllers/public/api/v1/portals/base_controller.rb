@@ -75,6 +75,6 @@ class Public::Api::V1::Portals::BaseController < PublicController
   end
 
   def set_global_config
-    @global_config = GlobalConfig.get('LOGO_THUMBNAIL', 'BRAND_NAME', 'BRAND_URL', 'INSTALLATION_NAME')
+    @global_config = GlobalConfig.get('LOGO_THUMBNAIL', 'LOGO_THUMBNAIL_DARK', 'BRAND_NAME', 'BRAND_URL', 'INSTALLATION_NAME')
   end
 end

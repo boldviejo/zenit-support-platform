@@ -11,6 +11,7 @@ class Api::V1::Widget::ConfigsController < Api::V1::Widget::BaseController
   def set_global_config
     @global_config = GlobalConfig.get(
       'LOGO_THUMBNAIL',
+      'LOGO_THUMBNAIL_DARK',
       'BRAND_NAME',
       'WIDGET_BRAND_URL',
       'MAXIMUM_FILE_UPLOAD_SIZE',

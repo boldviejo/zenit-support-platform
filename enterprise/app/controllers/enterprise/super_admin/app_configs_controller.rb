@@ -43,6 +43,7 @@ module Enterprise::SuperAdmin::AppConfigsController
   def custom_branding_options
     %w[
       LOGO_THUMBNAIL
+      LOGO_THUMBNAIL_DARK
       LOGO
       LOGO_DARK
       BRAND_NAME

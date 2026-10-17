@@ -3,6 +3,7 @@ import { useBranding } from 'shared/composables/useBranding';
 
 const {
   LOGO_THUMBNAIL: logoThumbnail,
+  LOGO_THUMBNAIL_DARK: logoThumbnailDark,
   BRAND_NAME: brandName,
   WIDGET_BRAND_URL: widgetBrandURL,
 } = window.globalConfig || {};
@@ -25,6 +26,7 @@ export default {
       globalConfig: {
         brandName,
         logoThumbnail,
+        logoThumbnailDark,
         widgetBrandURL,
       },
     };
@@ -63,9 +65,14 @@ export default {
       class="branding--link text-n-slate-11 hover:text-n-slate-12 cursor-pointer text-xs inline-flex grayscale-[1] hover:grayscale-0 hover:opacity-100 opacity-90 no-underline justify-center items-center leading-3"
     >
       <img
-        class="ltr:mr-1 rtl:ml-1 max-w-3 max-h-3"
+        class="ltr:mr-1 rtl:ml-1 max-w-3 max-h-3 dark:hidden"
         :alt="globalConfig.brandName"
         :src="globalConfig.logoThumbnail"
+      />
+      <img
+        class="ltr:mr-1 rtl:ml-1 max-w-3 max-h-3 hidden dark:block"
+        :alt="globalConfig.brandName"
+        :src="globalConfig.logoThumbnailDark || globalConfig.logoThumbnail"
       />
       <span>
         {{ replaceInstallationName($t('POWERED_BY')) }}

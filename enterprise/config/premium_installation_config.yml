@@ -3,6 +3,8 @@
   value: 'Chatwoot'
 - name: LOGO_THUMBNAIL
   value: '/brand-assets/logo_thumbnail.svg'
+- name: LOGO_THUMBNAIL_DARK
+  value: '/brand-assets/logo_thumbnail_dark.svg'
 - name: LOGO
   value: '/brand-assets/logo.svg'
 - name: LOGO_DARK

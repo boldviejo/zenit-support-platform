@@ -16,6 +16,7 @@ class WidgetsController < ActionController::Base
   def set_global_config
     @global_config = GlobalConfig.get(
       'LOGO_THUMBNAIL',
+      'LOGO_THUMBNAIL_DARK',
       'BRAND_NAME',
       'WIDGET_BRAND_URL',
       'DIRECT_UPLOADS_ENABLED',
