@@ -16,13 +16,12 @@ RSpec.describe Captain::Tools::AddPrivateNoteTool, type: :model do
     end
   end
 
-  describe '#parameters_schema' do
+  describe '#parameters' do
     it 'returns the correct parameters' do
-      properties = tool.parameters_schema.fetch('properties')
-
-      expect(properties).to have_key('note')
-      expect(properties['note']['type']).to eq('string')
-      expect(properties['note']['description']).to eq('The private note content')
+      expect(tool.parameters).to have_key(:note)
+      expect(tool.parameters[:note].name).to eq(:note)
+      expect(tool.parameters[:note].type).to eq('string')
+      expect(tool.parameters[:note].description).to eq('The private note content')
     end
   end
 
@@ -142,8 +141,15 @@ RSpec.describe Captain::Tools::AddPrivateNoteTool, type: :model do
       create(:message, conversation: conversation, account: account, inbox: inbox, message_type: :incoming)
     end
 
+    it 'keeps legacy public-tool side effects for Captain V1' do
+      expect do
+        result = tool.execute(tool_context, note: 'Keep the legacy side effect')
+        expect(result).to eq('Private note added successfully')
+      end.to change(Message, :count).by(1)
+    end
+
     it 'skips stale public-tool side effects for Captain V2' do
-      account.enable_features!(:captain_integration)
+      account.enable_features!(:captain_integration_v2)
 
       expect do
         result = tool.execute(tool_context, note: 'Do not create this note')
@@ -152,7 +158,7 @@ RSpec.describe Captain::Tools::AddPrivateNoteTool, type: :model do
     end
 
     it 'marks a stale playground tool call as an error for run details' do
-      account.enable_features!(:captain_integration)
+      account.enable_features!(:captain_integration_v2)
       tool_context.state[:source] = 'playground'
 
       result = tool.execute(tool_context, note: 'Do not create this note')

@@ -1,9 +1,8 @@
 import { shallowMount } from '@vue/test-utils';
 import GoogleOAuthButton from './Button.vue';
 
-function getWrapper(props = {}) {
+function getWrapper() {
   return shallowMount(GoogleOAuthButton, {
-    props,
     mocks: { $t: text => text },
   });
 }
@@ -32,23 +31,5 @@ describe('GoogleOAuthButton.vue', () => {
     );
     expect(params.get('response_type')).toBe('code');
     expect(params.get('scope')).toBe('email profile');
-    expect(params.has('state')).toBe(false);
-  });
-
-  it('carries the billing redirect through Google OAuth state', () => {
-    const redirectUrl =
-      'settings/billing?plan_handle=growth&shop=store.myshopify.com';
-    const wrapper = getWrapper({ redirectUrl });
-    const googleAuthUrl = new URL(wrapper.vm.getGoogleAuthUrl());
-
-    expect(googleAuthUrl.searchParams.get('state')).toBe(redirectUrl);
-  });
-
-  it('preserves the login redirect in OAuth state', () => {
-    const redirectUrl = `settings/integrations/shopify?shopify_pending_install=${'a'.repeat(32)}`;
-    const wrapper = getWrapper({ redirectUrl });
-    const googleAuthUrl = new URL(wrapper.vm.getGoogleAuthUrl());
-
-    expect(googleAuthUrl.searchParams.get('state')).toBe(redirectUrl);
   });
 });

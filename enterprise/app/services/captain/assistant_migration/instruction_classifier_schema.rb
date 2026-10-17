@@ -1,4 +1,4 @@
-class Captain::AssistantMigration::InstructionClassifierSchema < Schematist::Schema
+class Captain::AssistantMigration::InstructionClassifierSchema < RubyLLM::Schema
   DESCRIPTION_LENGTH_LIMIT = 500
 
   def self.instruction_items(field_name, description:, max_items: 20)

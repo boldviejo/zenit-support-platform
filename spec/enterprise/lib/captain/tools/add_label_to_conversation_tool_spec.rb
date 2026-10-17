@@ -17,13 +17,12 @@ RSpec.describe Captain::Tools::AddLabelToConversationTool, type: :model do
     end
   end
 
-  describe '#parameters_schema' do
+  describe '#parameters' do
     it 'returns the correct parameters' do
-      properties = tool.parameters_schema.fetch('properties')
-
-      expect(properties).to have_key('label_name')
-      expect(properties['label_name']['type']).to eq('string')
-      expect(properties['label_name']['description']).to eq('The name of the label to add')
+      expect(tool.parameters).to have_key(:label_name)
+      expect(tool.parameters[:label_name].name).to eq(:label_name)
+      expect(tool.parameters[:label_name].type).to eq('string')
+      expect(tool.parameters[:label_name].description).to eq('The name of the label to add')
     end
   end
 

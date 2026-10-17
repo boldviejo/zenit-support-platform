@@ -7,16 +7,6 @@ class Voice::InboundCallBuilder
     new(inbox: inbox, call_sid: call_sid, caller: caller, provider: provider, extra_meta: extra_meta).perform!
   end
 
-  # Queues the ring of a call that recorded who it rings and has no outcome for that ring
-  # yet: when the call is created, and again when a retried inbound event finds it, as when
-  # queueing the first job failed or its worker stopped. A ring still under way makes the
-  # extra job wait for it.
-  def self.queue_ring(call)
-    return unless call.ringing? && call.ring_state.key?('ring_recipient_ids') && !call.ring_state.key?('unreached_user_ids')
-
-    ActiveRecord.after_all_transactions_commit { Voice::VoipPushJob.perform_later(call.id, 'ring') }
-  end
-
   def initialize(inbox:, call_sid:, caller:, provider: :twilio, extra_meta: {})
     @inbox = inbox
     @call_sid = call_sid
@@ -28,20 +18,16 @@ class Voice::InboundCallBuilder
 
   def perform!
     existing = find_existing_call
-    # A retry of the inbound event queues the ring again if the call recorded who it rings
-    # but its ring never went out
-    return existing.tap { |call| self.class.queue_ring(call) } if existing
+    return existing if existing
 
     ActiveRecord::Base.transaction do
       contact_inbox = ensure_contact_inbox!
       contact = contact_inbox.contact
       conversation = resolve_conversation!(contact, contact_inbox)
-      created = create_call!(contact, conversation)
-      message = Voice::CallMessageBuilder.new(created).perform!
-      created.update!(message_id: message.id)
-      record_ring_audience(created)
-      ring_phones(created)
-      created
+      call = create_call!(contact, conversation)
+      message = Voice::CallMessageBuilder.new(call).perform!
+      call.update!(message_id: message.id)
+      call
     end
   rescue ActiveRecord::RecordNotUnique
     # A concurrent provider retry won the create race; return what now exists.
@@ -53,22 +39,6 @@ class Voice::InboundCallBuilder
   def account
     inbox.account
   end
-
-  # Phones without a live socket learn about the call through a push. The agents rung are
-  # recorded in the transaction that creates the call, so the push and a missed-call notice
-  # go to the same agents even when the conversation is reassigned before the job runs, and
-  # a call the caller ends as soon as it is visible still has them.
-  def record_ring_audience(call)
-    return unless account.feature_enabled?('channel_voice') && account.feature_enabled?('mobile_voice_push')
-
-    recipient_ids = Voice::VoipPushService.recipients_for(call).map(&:id)
-    call.update_columns(ring_state: call.ring_state.merge('ring_recipient_ids' => recipient_ids)) # rubocop:disable Rails/SkipsModelValidations
-  end
-
-  # Registered in the transaction that records the audience, so the job is queued with it.
-  # The job runs once the call row is visible to the worker, which otherwise finds nothing
-  # to ring for.
-  def ring_phones(call) = self.class.queue_ring(call)
 
   def find_existing_call
     Call.where(account_id: account.id, inbox_id: inbox.id)

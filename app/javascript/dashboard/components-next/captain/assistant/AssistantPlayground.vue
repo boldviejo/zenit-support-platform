@@ -1,23 +1,15 @@
 <script setup>
-import {
-  computed,
-  onBeforeUnmount,
-  onMounted,
-  reactive,
-  ref,
-  toRef,
-  watch,
-} from 'vue';
+import { computed, reactive, ref, toRef, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core';
 import NextButton from 'dashboard/components-next/button/Button.vue';
 import SidePanel from 'dashboard/components-next/side-panel/SidePanel.vue';
+import { FEATURE_FLAGS } from 'dashboard/featureFlags';
+import { usePolicy } from 'dashboard/composables/usePolicy';
 import MessageList from './MessageList.vue';
 import PlaygroundTestSetup from './PlaygroundTestSetup.vue';
 import { usePlaygroundSession } from './usePlaygroundSession';
 import CaptainAssistant from 'dashboard/api/captain/assistant';
-import { BUS_EVENTS } from 'shared/constants/busEvents';
-import { emitter } from 'shared/helpers/mitt';
 
 const props = defineProps({
   assistantId: {
@@ -26,9 +18,9 @@ const props = defineProps({
   },
 });
 
-const PLAYGROUND_RESPONSE_TIMEOUT_MS = 120000;
-
 const { t } = useI18n();
+const { isFeatureFlagEnabled } = usePolicy();
+const isV2 = computed(() => isFeatureFlagEnabled(FEATURE_FLAGS.CAPTAIN_V2));
 const isBelowXL = useBreakpoints(breakpointsTailwind).smaller('xl');
 
 const messages = ref([]);
@@ -37,7 +29,7 @@ const isLoading = ref(false);
 const isSetupOpen = ref(true);
 const setupPanelRef = ref(null);
 const setupInstanceKey = ref(0);
-let activeRequest = null;
+let conversationVersion = 0;
 
 const session = reactive(
   usePlaygroundSession({
@@ -49,8 +41,7 @@ const isSendDisabled = computed(
   () =>
     !newMessage.value.trim() ||
     isLoading.value ||
-    session.isInitializing ||
-    Boolean(session.loadError)
+    (isV2.value && (session.isInitializing || Boolean(session.loadError)))
 );
 
 const formatMessagesForApi = () => {
@@ -80,59 +71,10 @@ const pushAssistantError = content => {
 };
 
 const resetConversation = () => {
-  clearTimeout(activeRequest?.timeoutId);
-  activeRequest = null;
-  isLoading.value = false;
+  conversationVersion += 1;
   messages.value = [];
   newMessage.value = '';
 };
-
-const playgroundResponseContent = data => {
-  if (!data.error) return data.response || data.content;
-  if (typeof data.error === 'string') return data.error;
-
-  return t('CAPTAIN.PLAYGROUND.RESPONSE_ERROR');
-};
-
-const handlePlaygroundResponse = data => {
-  if (data.request_id !== activeRequest?.id) return;
-
-  const { setupSummary } = activeRequest;
-  clearTimeout(activeRequest.timeoutId);
-  activeRequest = null;
-  isLoading.value = false;
-  messages.value.push({
-    content: playgroundResponseContent(data),
-    sender: 'assistant',
-    agentName: data.agent_name,
-    runDetails: data.run_details,
-    setupSummary,
-    isError: Boolean(data.error),
-    timestamp: new Date().toISOString(),
-  });
-};
-
-const failActiveRequest = (
-  content = t('CAPTAIN.PLAYGROUND.RESPONSE_ERROR')
-) => {
-  if (!activeRequest) return;
-
-  clearTimeout(activeRequest.timeoutId);
-  activeRequest = null;
-  isLoading.value = false;
-  pushAssistantError(content);
-};
-
-onMounted(() => {
-  emitter.on(BUS_EVENTS.CAPTAIN_PLAYGROUND_RESPONSE, handlePlaygroundResponse);
-  emitter.on(BUS_EVENTS.WEBSOCKET_DISCONNECT, failActiveRequest);
-});
-
-onBeforeUnmount(() => {
-  emitter.off(BUS_EVENTS.CAPTAIN_PLAYGROUND_RESPONSE, handlePlaygroundResponse);
-  emitter.off(BUS_EVENTS.WEBSOCKET_DISCONNECT, failActiveRequest);
-  clearTimeout(activeRequest?.timeoutId);
-});
 
 const resetTestSetup = async () => {
   resetConversation();
@@ -154,23 +96,35 @@ watch(
     if (oldId && newId !== oldId) {
       resetConversation();
       setupInstanceKey.value += 1;
-      isSetupOpen.value = true;
-      session.reset();
+      if (isV2.value) {
+        isSetupOpen.value = true;
+        session.reset();
+      }
     }
   }
 );
 
-session.initialize();
+watch(
+  isV2,
+  enabled => {
+    if (enabled) session.initialize();
+  },
+  { immediate: true }
+);
 
 const sendMessage = async () => {
-  if (!newMessage.value.trim() || isLoading.value || session.isInitializing) {
+  if (
+    !newMessage.value.trim() ||
+    isLoading.value ||
+    (isV2.value && session.isInitializing)
+  ) {
     return;
   }
-  if (session.loadError) {
+  if (isV2.value && session.loadError) {
     pushAssistantError(session.loadError);
     return;
   }
-  if (!session.isValid) {
+  if (isV2.value && !session.isValid) {
     pushAssistantError(t('CAPTAIN.PLAYGROUND.SETUP.INVALID_CONFIGURATION'));
     return;
   }
@@ -182,32 +136,41 @@ const sendMessage = async () => {
   };
   messages.value.push(userMessage);
   const currentMessage = newMessage.value;
-  const setupSummary = session.configurationSummary();
-  const requestId = `playground-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const requestVersion = conversationVersion;
+  const setupSummary = isV2.value ? session.configurationSummary() : undefined;
   newMessage.value = '';
-  activeRequest = {
-    id: requestId,
-    setupSummary,
-    timeoutId: setTimeout(failActiveRequest, PLAYGROUND_RESPONSE_TIMEOUT_MS),
-  };
 
   try {
     isLoading.value = true;
-    await CaptainAssistant.playground({
+    const { data } = await CaptainAssistant.playground({
       assistantId: props.assistantId,
       messageContent: currentMessage,
       messageHistory: formatMessagesForApi(),
-      playgroundConfig: session.playgroundConfig,
-      requestId,
+      playgroundConfig: isV2.value ? session.playgroundConfig : undefined,
+    });
+    if (requestVersion !== conversationVersion) return;
+
+    messages.value.push({
+      content: data.error
+        ? t('CAPTAIN.PLAYGROUND.RESPONSE_ERROR')
+        : data.response,
+      sender: 'assistant',
+      agentName: data.agent_name,
+      runDetails: data.run_details,
+      setupSummary,
+      isError: Boolean(data.error),
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    if (requestId !== activeRequest?.id) return;
+    if (requestVersion !== conversationVersion) return;
 
-    const errorMessage =
+    pushAssistantError(
       error?.response?.data?.error ||
-      error?.response?.data?.message ||
-      t('CAPTAIN.PLAYGROUND.RESPONSE_ERROR');
-    failActiveRequest(errorMessage);
+        error?.response?.data?.message ||
+        t('CAPTAIN.PLAYGROUND.RESPONSE_ERROR')
+    );
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -220,9 +183,10 @@ const handleEnterKey = event => {
 
 <template>
   <div
-    class="flex h-full overflow-hidden rounded-xl border border-n-weak text-n-slate-11"
+    class="h-full rounded-xl border border-n-weak text-n-slate-11"
+    :class="isV2 ? 'flex overflow-hidden' : 'flex flex-col'"
   >
-    <div class="flex min-w-0 flex-1 flex-col pt-6 pb-16 xl:pb-6">
+    <div class="flex min-w-0 flex-1 flex-col py-6">
       <div class="mb-8 px-6">
         <div class="mb-1 flex items-center justify-between gap-3">
           <h3 class="text-lg font-medium">
@@ -238,6 +202,7 @@ const handleEnterKey = event => {
               @click="resetConversation"
             />
             <NextButton
+              v-if="isV2"
               ghost
               sm
               slate
@@ -279,7 +244,7 @@ const handleEnterKey = event => {
     </div>
 
     <aside
-      v-if="isSetupOpen && !isBelowXL"
+      v-if="isV2 && isSetupOpen && !isBelowXL"
       aria-labelledby="playground-test-setup-title"
       class="flex w-[36rem] flex-none flex-col border-s border-n-weak bg-n-surface-1 text-n-slate-12"
     >
@@ -323,7 +288,7 @@ const handleEnterKey = event => {
     </aside>
 
     <SidePanel
-      v-if="isBelowXL"
+      v-if="isV2 && isBelowXL"
       ref="setupPanelRef"
       width="lg"
       :title="t('CAPTAIN.PLAYGROUND.SETUP.TITLE')"

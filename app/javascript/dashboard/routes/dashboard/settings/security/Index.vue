@@ -1,11 +1,9 @@
 <script setup>
 import { computed } from 'vue';
-import { parseBoolean } from '@chatwoot/utils';
 import BaseSettingsHeader from '../components/BaseSettingsHeader.vue';
 import SettingsLayout from '../SettingsLayout.vue';
 import SamlSettings from './components/SamlSettings.vue';
 import SamlPaywall from './components/SamlPaywall.vue';
-import EnforceMfa from './components/EnforceMfa.vue';
 
 import { usePolicy } from 'dashboard/composables/usePolicy';
 import { INSTALLATION_TYPES } from 'dashboard/constants/installationTypes';
@@ -30,21 +28,6 @@ const shouldShowSaml = computed(() => {
 });
 
 const showPaywall = computed(() => shouldShowPaywall('saml'));
-
-const isMfaAvailable = computed(() =>
-  parseBoolean(window.chatwootConfig?.isMfaEnabled)
-);
-
-// SAML is cloud/enterprise; self-hosted community reaches this page for MFA only.
-const showSamlSection = computed(
-  () =>
-    showPaywall.value ||
-    shouldShow(
-      FEATURE_FLAGS.SAML,
-      ['administrator'],
-      [INSTALLATION_TYPES.CLOUD, INSTALLATION_TYPES.ENTERPRISE]
-    )
-);
 </script>
 
 <template>
@@ -58,21 +41,10 @@ const showSamlSection = computed(
       />
     </template>
     <template #body>
-      <div class="flex flex-col gap-4">
-        <EnforceMfa v-if="isMfaAvailable" />
-        <template v-if="showSamlSection">
-          <SamlPaywall v-if="showPaywall" />
-          <SamlSettings v-else-if="shouldShowSaml" />
-          <p v-else class="text-body-main text-n-slate-11">
-            {{ $t('SECURITY_SETTINGS.SAML_DISABLED_MESSAGE') }}
-          </p>
-        </template>
-        <p
-          v-if="!isMfaAvailable && !showSamlSection"
-          class="text-body-main text-n-slate-11"
-        >
-          {{ $t('SECURITY_SETTINGS.NO_SETTINGS_AVAILABLE') }}
-        </p>
+      <SamlPaywall v-if="showPaywall" />
+      <SamlSettings v-else-if="shouldShowSaml" />
+      <div v-else class="mt-6 text-sm text-slate-600">
+        {{ $t('SECURITY_SETTINGS.SAML_DISABLED_MESSAGE') }}
       </div>
     </template>
   </SettingsLayout>

@@ -23,7 +23,6 @@ class Captain::Llm::ConversationFaqContentService
     messages = conversation
                .messages
                .where(message_type: %i[incoming outgoing], private: false)
-               .not_forwarded
                .order(created_at: :asc)
 
     return "No messages in this conversation\n" if messages.empty?
@@ -59,6 +58,7 @@ class Captain::Llm::ConversationFaqContentService
     {
       product_name: assistant.config['product_name'],
       assistant_description: assistant.description,
+      instructions: assistant.config['instructions'],
       response_guidelines: assistant.response_guidelines,
       guardrails: assistant.guardrails
     }.compact

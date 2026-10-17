@@ -5,7 +5,6 @@ import { useRoute, useRouter } from 'vue-router';
 import { FEATURE_FLAGS } from 'dashboard/featureFlags';
 import { useMapGetter } from 'dashboard/composables/store';
 import { useCaptain } from 'dashboard/composables/useCaptain';
-import { usePolicy } from 'dashboard/composables/usePolicy';
 import {
   isAbortError,
   useAbortableRequest,
@@ -25,15 +24,10 @@ import ResolutionTrendCard from './ResolutionTrendCard.vue';
 import CsatCard from './CsatCard.vue';
 import UsageCard from './UsageCard.vue';
 import KnowledgeCoverageCard from './KnowledgeCoverageCard.vue';
-import OverviewDrilldownDrawer from './OverviewDrilldownDrawer.vue';
-import { DRILLDOWN_METRICS } from './drilldownMetrics';
 
 const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
-const { checkPermissions } = usePolicy();
-const canDrilldown = computed(() => checkPermissions(['administrator']));
-const selectedDrilldown = ref(null);
 const currentUser = useMapGetter('getCurrentUser');
 const { responseLimits, documentLimits, isFetchingLimits, fetchLimits } =
   useCaptain();
@@ -139,7 +133,6 @@ const fetchKnowledge = async () => {
 watch(
   [selectedRange, assistantId],
   () => {
-    selectedDrilldown.value = null;
     fetchReport();
     fetchSummary();
   },
@@ -226,7 +219,6 @@ const metricFor = ({
 
   return {
     key,
-    clickable: canDrilldown.value && Object.hasOwn(DRILLDOWN_METRICS, key),
     label,
     hint,
     hintNote,
@@ -270,7 +262,6 @@ const featuredMetrics = computed(() => {
   });
 
   if (overview.value?.durable_resolution_rate?.current === null) {
-    durableMetric.clickable = false;
     durableMetric.valueClass = 'text-n-slate-11';
     durableMetric.hint = t(
       'CAPTAIN.OVERVIEW.V2.METRICS.DURABLE.NOT_APPLICABLE_HINT'
@@ -392,14 +383,11 @@ const reviewFaqs = () =>
           :metrics="metrics"
           :loading="isFetchingReport"
           :summary-loading="isFetchingSummary"
-          @metric-click="selectedDrilldown = $event"
         />
 
         <ResolutionFlowCard
           :flow="resolutionFlow"
           :loading="isFetchingReport"
-          :can-drilldown="canDrilldown"
-          @drilldown="selectedDrilldown = $event"
         />
 
         <div class="grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
@@ -432,14 +420,6 @@ const reviewFaqs = () =>
 
         <QuickLinks />
       </div>
-
-      <OverviewDrilldownDrawer
-        v-if="canDrilldown && selectedDrilldown"
-        :assistant-id="assistantId"
-        :metric="selectedDrilldown"
-        :range="selectedRange"
-        @close="selectedDrilldown = null"
-      />
     </template>
   </PageLayout>
 </template>

@@ -47,8 +47,6 @@ export const getCustomAttributeInputType = key => {
   switch (key) {
     case 'date':
       return 'date';
-    case 'number':
-      return 'number';
     case 'text':
       return 'plainText';
     case 'list':

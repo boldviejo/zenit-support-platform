@@ -19,10 +19,10 @@ export default createStore({
       }
     },
 
-    delete: async ({ commit }, { id, assistantId }) => {
+    delete: async ({ commit }, id) => {
       commit(mutations.SET_UI_FLAG, { deletingItem: true });
       try {
-        await CaptainCustomTools.delete({ id, assistantId });
+        await CaptainCustomTools.delete(id);
         commit(mutations.DELETE, id);
         commit(mutations.SET_UI_FLAG, { deletingItem: false });
         return id;

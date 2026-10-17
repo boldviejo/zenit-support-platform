@@ -2,7 +2,7 @@ module Captain::Conversation::V2LifecycleEvents
   private
 
   def v2_generation_errored?
-    @response['error'].present?
+    captain_v2_enabled? && @response['error'].present?
   end
 
   def record_v2_response_completed(message)

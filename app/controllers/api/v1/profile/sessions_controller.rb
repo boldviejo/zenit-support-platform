@@ -1,7 +1,4 @@
 class Api::V1::Profile::SessionsController < Api::BaseController
-  include MfaEnforcementGuard
-
-  before_action :check_user_mfa_enforcement, if: :authenticate_by_access_token?
   before_action :set_session, only: [:destroy]
 
   def index

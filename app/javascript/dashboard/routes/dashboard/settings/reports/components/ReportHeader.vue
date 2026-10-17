@@ -26,9 +26,8 @@ defineProps({
       <div class="flex flex-col gap-2">
         <div class="flex flex-col gap-3 items-start">
           <span
-            class="text-heading-1 text-n-slate-12 min-h-10 flex items-center gap-2"
+            class="text-heading-1 text-n-slate-12 min-h-10 flex items-center"
           >
-            <slot name="icon" />
             {{ headerTitle }}
           </span>
           <p

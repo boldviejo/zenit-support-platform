@@ -32,5 +32,3 @@ class NotificationSubscriptionBuilder
     identifier_subscription.update(params.merge(identifier: identifier))
   end
 end
-
-NotificationSubscriptionBuilder.prepend_mod_with('NotificationSubscriptionBuilder')

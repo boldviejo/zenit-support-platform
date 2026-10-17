@@ -1,4 +1,4 @@
-import { flushPromises, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import { REPLY_EDITOR_MODES } from 'dashboard/components/widgets/WootWriter/constants';
 import { nextTick } from 'vue';
 import { createStore } from 'vuex';
@@ -40,7 +40,6 @@ const buildStore = ({
   drafts = {},
   inboxes,
   isMetaMessageSendingDisabled = false,
-  uiSettings = {},
 }) =>
   createStore({
     state: {
@@ -69,7 +68,7 @@ const buildStore = ({
       getCurrentUser: () => ({ id: 7, name: 'Agent', accounts: [] }),
       getCurrentAccountId: () => 1,
       getMessageSignature: () => '',
-      getUISettings: () => uiSettings,
+      getUISettings: () => ({}),
       getLastEmailInSelectedChat: () => null,
       'globalConfig/get': () => ({}),
       'globalConfig/isMetaMessageSendingDisabled': () =>
@@ -96,7 +95,6 @@ const mountWith = ({
   drafts,
   inboxes,
   isMetaMessageSendingDisabled,
-  uiSettings,
 }) => {
   const store = buildStore({
     inbox,
@@ -105,7 +103,6 @@ const mountWith = ({
     drafts,
     inboxes,
     isMetaMessageSendingDisabled,
-    uiSettings,
   });
   const wrapper = shallowMount(ReplyBox, {
     global: {
@@ -184,7 +181,7 @@ describe('ReplyBox', () => {
   });
 
   describe.each(CHANNELS)('$name', ({ name, inbox }) => {
-    it('locks the composer and hides template sends when the conversation has an AI assignee', () => {
+    it('locks the composer and hides template sends when a bot owns a pending conversation', () => {
       const { wrapper } = mountWith({
         inbox,
         chat: {
@@ -200,7 +197,7 @@ describe('ReplyBox', () => {
       expect(topPanel(wrapper).isEditorDisabled).toBe(false);
     });
 
-    it('opens directly in note mode when the conversation has an AI assignee', () => {
+    it('opens directly in note mode when a bot already owns the pending conversation', () => {
       const { wrapper, store } = mountWith({
         inbox,
         chat: {
@@ -227,7 +224,7 @@ describe('ReplyBox', () => {
     });
 
     it.each(['open', 'resolved', 'snoozed'])(
-      'keeps the composer available when a %s conversation has an AI assignee',
+      'leaves the composer open when a bot owns a %s conversation',
       status => {
         const { wrapper } = mountWith({
           inbox,
@@ -270,22 +267,6 @@ describe('ReplyBox', () => {
     });
   });
 
-  it('locks the composer when the conversation has a Captain assistant assignee', () => {
-    const { wrapper } = mountWith({
-      inbox: { channel_type: 'Channel::WebWidget' },
-      chat: {
-        status: 'pending',
-        meta: {
-          sender: { id: 2 },
-          assignee_type: 'Captain::Assistant',
-        },
-      },
-    });
-
-    expect(topPanel(wrapper).isReplyRestricted).toBe(true);
-    expect(bottomPanel(wrapper).isOnPrivateNote).toBe(true);
-  });
-
   it('hides the template action when the inbox has no templates synced', () => {
     const { wrapper } = mountWith({
       inbox: { channel_type: 'Channel::Whatsapp' },
@@ -303,7 +284,7 @@ describe('ReplyBox', () => {
       'draft-1-NOTE': 'a note',
     };
 
-    it('loads the note draft while the conversation has an AI assignee', async () => {
+    it('loads the note draft while a bot owns the conversation', async () => {
       const { wrapper } = mountWith({
         inbox: { channel_type: 'Channel::WebWidget' },
         chat: {
@@ -348,7 +329,7 @@ describe('ReplyBox', () => {
     });
   });
 
-  it('offers content templates on Twilio WhatsApp when the conversation has no AI assignee', () => {
+  it('offers content templates on Twilio WhatsApp when no bot owns the conversation', () => {
     const { wrapper } = mountWith({
       inbox: { channel_type: 'Channel::TwilioSms', medium: 'whatsapp' },
       chat: { can_reply: true, status: 'open' },
@@ -367,7 +348,7 @@ describe('ReplyBox', () => {
       return { wrapper, store };
     };
 
-    it('switches to note mode when a pending conversation has an AI assignee', async () => {
+    it('switches to note mode when a bot owns a pending conversation', async () => {
       const { wrapper } = await selectChat({
         status: 'pending',
         meta: { sender: { id: 2 }, assignee_type: 'AgentBot' },
@@ -448,33 +429,6 @@ describe('ReplyBox', () => {
       expect(store.getters['draftMessages/getReplyEditorMode']).toBe(
         REPLY_EDITOR_MODES.NOTE
       );
-    });
-  });
-
-  describe('send shortcut', () => {
-    const pressEnter = init =>
-      document.dispatchEvent(
-        new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', ...init })
-      );
-
-    it('ignores Enter while an IME composition is active', async () => {
-      const { wrapper } = mountWith({
-        inbox: { channel_type: 'Channel::WebWidget' },
-        uiSettings: { editor_message_key: 'enter' },
-      });
-      await flushPromises();
-      wrapper.vm.isFocused = true;
-      const onSendReply = vi
-        .spyOn(wrapper.vm, 'onSendReply')
-        .mockImplementation(() => {});
-
-      pressEnter({ key: 'Process', isComposing: true });
-      expect(onSendReply).not.toHaveBeenCalled();
-
-      pressEnter({});
-      expect(onSendReply).toHaveBeenCalledTimes(1);
-
-      wrapper.unmount();
     });
   });
 });

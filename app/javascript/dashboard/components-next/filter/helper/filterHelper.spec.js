@@ -34,9 +34,6 @@ vi.mock('vue-i18n', () => ({
 
 describe('filterHelper', () => {
   describe('getCustomAttributeInputType', () => {
-    it('returns number for number type', () => {
-      expect(getCustomAttributeInputType('number')).toBe('number');
-    });
     it('returns date for date type', () => {
       expect(getCustomAttributeInputType('date')).toBe('date');
     });

@@ -4,7 +4,6 @@ import { ref, computed, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { handleOtpPaste } from 'shared/helpers/clipboard';
 import {
-  clearLocalStorageOnLogout,
   parseAPIErrorResponse,
   setAuthCredentials,
 } from 'dashboard/store/utils/api';
@@ -20,13 +19,9 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  verificationChannel: {
-    type: String,
-    default: null,
-  },
 });
 
-const emit = defineEmits(['verified', 'cancel', 'setupRequired']);
+const emit = defineEmits(['verified', 'cancel']);
 
 const { t } = useI18n();
 const { isOnChatwootCloud } = useAccount();
@@ -38,7 +33,6 @@ const BACKUP = 'backup';
 const verificationMethod = ref(OTP);
 const otpDigits = ref(['', '', '', '', '', '']);
 const backupCode = ref('');
-const rememberDevice = ref(true);
 const isVerifying = ref(false);
 const errorMessage = ref('');
 const helpModalRef = ref(null);
@@ -55,10 +49,6 @@ const canSubmit = computed(() =>
 const contactDescKey = computed(() =>
   isOnChatwootCloud.value ? 'CONTACT_DESC_CLOUD' : 'CONTACT_DESC_SELF_HOSTED'
 );
-
-// Device verification delivers the code by email; the TOTP tabs, backup codes
-// and 2FA help do not apply on that flow.
-const isEmailChannel = computed(() => props.verificationChannel === 'email');
 
 const focusInput = i => otpInputRefs.value[i]?.focus();
 
@@ -80,20 +70,9 @@ const handleVerification = async () => {
       payload.backup_code = backupCode.value;
     }
 
-    if (isEmailChannel.value) {
-      payload.remember_device = rememberDevice.value;
-    }
-
     const response = await axios.post('/auth/sign_in', payload);
-    // Device verification chains into enforced MFA enrolment for un-enrolled
-    // users: this 206 carries a setup challenge, not an authenticated session.
-    if (response.status === 206 && response.data?.mfa_setup_required) {
-      emit('setupRequired', response.data);
-      return;
-    }
     setAuthCredentials(response);
-    clearLocalStorageOnLogout();
-    emit('verified', response.data?.data);
+    emit('verified', response.data);
   } catch (error) {
     errorMessage.value =
       parseAPIErrorResponse(error) || t('MFA_VERIFICATION.VERIFICATION_FAILED');
@@ -174,30 +153,15 @@ const handleTryAnotherMethod = () => {
           <Icon icon="i-lucide-lock-keyhole" class="size-6 text-n-slate-10" />
         </div>
         <h2 class="text-2xl font-semibold text-n-slate-12">
-          {{
-            $t(
-              isEmailChannel
-                ? 'MFA_VERIFICATION.EMAIL_TITLE'
-                : 'MFA_VERIFICATION.TITLE'
-            )
-          }}
+          {{ $t('MFA_VERIFICATION.TITLE') }}
         </h2>
         <p class="text-sm text-n-slate-11 mt-2">
-          {{
-            $t(
-              isEmailChannel
-                ? 'MFA_VERIFICATION.EMAIL_DESCRIPTION'
-                : 'MFA_VERIFICATION.DESCRIPTION'
-            )
-          }}
+          {{ $t('MFA_VERIFICATION.DESCRIPTION') }}
         </p>
       </div>
 
       <!-- Tab Selection -->
-      <div
-        v-if="!isEmailChannel"
-        class="flex rounded-lg bg-n-alpha-black2 p-1 mb-6"
-      >
+      <div class="flex rounded-lg bg-n-alpha-black2 p-1 mb-6">
         <button
           v-for="method in [OTP, BACKUP]"
           :key="method"
@@ -222,13 +186,7 @@ const handleTryAnotherMethod = () => {
         <!-- OTP Code Input -->
         <div v-if="verificationMethod === OTP">
           <label class="block text-sm font-medium text-n-slate-12 mb-2">
-            {{
-              $t(
-                isEmailChannel
-                  ? 'MFA_VERIFICATION.ENTER_EMAIL_CODE'
-                  : 'MFA_VERIFICATION.ENTER_OTP_CODE'
-              )
-            }}
+            {{ $t('MFA_VERIFICATION.ENTER_OTP_CODE') }}
           </label>
           <div class="flex justify-between gap-2">
             <input
@@ -267,20 +225,6 @@ const handleTryAnotherMethod = () => {
           />
         </div>
 
-        <!-- Trust this device (email verification only) -->
-        <label
-          v-if="isEmailChannel"
-          class="flex items-center gap-2 text-sm text-n-slate-11 cursor-pointer"
-        >
-          <input
-            v-model="rememberDevice"
-            type="checkbox"
-            data-testid="remember_device"
-            class="rounded border-n-weak"
-          />
-          {{ $t('MFA_VERIFICATION.REMEMBER_DEVICE') }}
-        </label>
-
         <!-- Error Message -->
         <div
           v-if="errorMessage"
@@ -304,7 +248,6 @@ const handleTryAnotherMethod = () => {
         <!-- Alternative Actions -->
         <div class="text-center flex items-center flex-col gap-2 pt-4">
           <NextButton
-            v-if="!isEmailChannel"
             sm
             link
             type="button"
@@ -328,7 +271,7 @@ const handleTryAnotherMethod = () => {
     </div>
 
     <!-- Help Text -->
-    <div v-if="!isEmailChannel" class="mt-6 text-center">
+    <div class="mt-6 text-center">
       <p class="text-sm text-n-slate-11">
         {{ $t('MFA_VERIFICATION.HELP_TEXT') }}
       </p>

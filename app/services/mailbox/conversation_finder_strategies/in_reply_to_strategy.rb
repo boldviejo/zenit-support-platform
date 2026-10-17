@@ -25,20 +25,14 @@ class Mailbox::ConversationFinderStrategies::InReplyToStrategy < Mailbox::Conver
       end
 
       # Try finding by message source_id
-      conversation = conversation_from_source_id(in_reply_to)
-      return conversation if conversation
+      message = Message.find_by(source_id: in_reply_to)
+      return message.conversation if message&.conversation
     end
 
     nil
   end
 
   private
-
-  # Replies to a forwarded email start a new conversation with the forward recipient
-  def conversation_from_source_id(message_id)
-    message = Message.find_by(source_id: message_id)
-    message&.conversation unless message&.forwarded?
-  end
 
   def extract_uuid_from_patterns(message_id)
     # Try message-specific pattern first

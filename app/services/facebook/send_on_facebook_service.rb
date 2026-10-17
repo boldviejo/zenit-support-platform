@@ -1,6 +1,4 @@
 class Facebook::SendOnFacebookService < Base::SendOnChannelService
-  include Facebook::HumanAgentTagHelpers
-
   private
 
   def channel_class
@@ -97,7 +95,7 @@ class Facebook::SendOnFacebookService < Base::SendOnChannelService
   end
 
   def merge_human_agent_tag(params)
-    unless GlobalConfigService.load('ENABLE_MESSENGER_CHANNEL_HUMAN_AGENT', nil) && human_agent_tag_applicable?
+    unless GlobalConfigService.load('ENABLE_MESSENGER_CHANNEL_HUMAN_AGENT', nil)
       params[:messaging_type] = 'RESPONSE'
       return params
     end

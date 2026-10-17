@@ -6,10 +6,9 @@ class CaptainTools extends ApiClient {
     super('captain/assistants/tools', { accountScoped: true });
   }
 
-  get({ signal, ...params } = {}) {
+  get(params = {}) {
     return axios.get(this.url, {
       params,
-      signal,
     });
   }
 }

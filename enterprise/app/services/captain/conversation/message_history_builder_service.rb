@@ -18,7 +18,6 @@ class Captain::Conversation::MessageHistoryBuilderService
   def conversation_messages_for_context
     conversation.messages
                 .where(private: false, message_type: [:incoming, :outgoing, :activity])
-                .not_forwarded
                 .reorder(created_at: :asc, id: :asc)
   end
 

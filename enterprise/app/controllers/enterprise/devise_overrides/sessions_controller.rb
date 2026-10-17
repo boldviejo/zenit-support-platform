@@ -1,6 +1,5 @@
 module Enterprise::DeviseOverrides::SessionsController
   include SamlAuthenticationHelper
-  include Enterprise::DeviseOverrides::DeviceVerificationConcern
 
   def create
     # Normalize the same way find_user_for_authentication does, so a padded or
@@ -19,18 +18,13 @@ module Enterprise::DeviseOverrides::SessionsController
   end
 
   def render_create_success
-    create_audit_event('sign_in') unless @impersonation
+    create_audit_event('sign_in')
     super
   end
 
   def destroy
-    create_audit_event('sign_out') unless impersonation_session?
+    create_audit_event('sign_out')
     super
-  end
-
-  def impersonation_session?
-    token_entry = @resource&.tokens&.dig(@token&.client) || {}
-    token_entry['impersonation'] || token_entry[:impersonation]
   end
 
   def create_audit_event(action)

@@ -4,7 +4,6 @@ import { useRouter } from 'vue-router';
 import { useMapGetter, useStore } from 'dashboard/composables/store.js';
 import { useAccount } from 'dashboard/composables/useAccount';
 import { useCaptain } from 'dashboard/composables/useCaptain';
-import { usePaymentStatus } from 'dashboard/composables/usePaymentStatus';
 import { format } from 'date-fns';
 import sessionStorage from 'shared/helpers/sessionStorage';
 
@@ -16,13 +15,11 @@ import PurchaseCreditsModal from './components/PurchaseCreditsModal.vue';
 import BaseSettingsHeader from '../components/BaseSettingsHeader.vue';
 import SettingsLayout from '../SettingsLayout.vue';
 import ButtonV4 from 'next/button/Button.vue';
-import Banner from 'next/banner/Banner.vue';
 import { getCurrencyConfig } from 'dashboard/constants/billing';
 import { useI18n } from 'vue-i18n';
 
 const router = useRouter();
 const { currentAccount, isOnChatwootCloud } = useAccount();
-const { isPastDue } = usePaymentStatus();
 const {
   captainEnabled,
   captainLimits,
@@ -222,17 +219,6 @@ onMounted(handleBillingPageLogic);
         </BillingCard>
       </section>
       <section v-else class="grid gap-4">
-        <Banner
-          v-if="isPastDue"
-          color="ruby"
-          role="alert"
-          class="flex-wrap"
-          :action-label="$t('BILLING_SETTINGS.PAYMENT_RECOVERY.ACTION')"
-          :is-loading="uiFlags.isCheckoutInProcess"
-          @action="onClickBillingPortal"
-        >
-          {{ $t('BILLING_SETTINGS.PAYMENT_RECOVERY.DESCRIPTION') }}
-        </Banner>
         <BillingCard
           :title="$t('BILLING_SETTINGS.MANAGE_SUBSCRIPTION.TITLE')"
           :description="$t('BILLING_SETTINGS.MANAGE_SUBSCRIPTION.DESCRIPTION')"
@@ -261,7 +247,7 @@ onMounted(handleBillingPageLogic);
               :value="subscriptionCancelsOn"
             />
             <DetailItem
-              v-else-if="subscriptionRenewsOn && !isPastDue"
+              v-else-if="subscriptionRenewsOn"
               :label="$t('BILLING_SETTINGS.CURRENT_PLAN.RENEWS_ON')"
               :value="subscriptionRenewsOn"
             />

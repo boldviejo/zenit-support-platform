@@ -1,4 +1,4 @@
-class Captain::AssistantOverviewSummarySchema < Schematist::Schema
+class Captain::AssistantOverviewSummarySchema < RubyLLM::Schema
   MAX_POINTS = 3
 
   array :points,

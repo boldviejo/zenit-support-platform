@@ -49,5 +49,3 @@ class Messages::NewMessageNotificationService
     conversation.notifications.exists?(user: user, secondary_actor: message)
   end
 end
-
-Messages::NewMessageNotificationService.prepend_mod_with('Messages::NewMessageNotificationService')

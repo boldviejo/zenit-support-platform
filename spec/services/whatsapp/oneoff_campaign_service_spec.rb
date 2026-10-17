@@ -37,7 +37,7 @@ describe Whatsapp::OneoffCampaignService do
   describe '#perform' do
     before do
       # Enable WhatsApp campaigns feature flag for all tests
-      account.enable_features!(:campaigns)
+      account.enable_features!(:whatsapp_campaign)
     end
 
     context 'when campaign validation fails' do
@@ -69,7 +69,7 @@ describe Whatsapp::OneoffCampaignService do
       end
 
       it 'raises error when WhatsApp campaigns feature is not enabled' do
-        account.disable_features!(:campaigns)
+        account.disable_features!(:whatsapp_campaign)
 
         expect { described_class.new(campaign: campaign).perform }.to raise_error 'WhatsApp campaigns feature not enabled'
       end
@@ -77,9 +77,7 @@ describe Whatsapp::OneoffCampaignService do
 
     context 'when campaign is valid' do
       it 'marks campaign as completed' do
-        perform_enqueued_jobs do
-          described_class.new(campaign: campaign).perform
-        end
+        described_class.new(campaign: campaign).perform
 
         expect(campaign.reload.completed?).to be true
       end
@@ -92,9 +90,7 @@ describe Whatsapp::OneoffCampaignService do
           expect(campaign.reload.completed?).to be false
         end
 
-        perform_enqueued_jobs do
-          described_class.new(campaign: campaign).perform
-        end
+        described_class.new(campaign: campaign).perform
 
         expect(campaign.reload.completed?).to be true
       end
@@ -108,9 +104,7 @@ describe Whatsapp::OneoffCampaignService do
 
         expect(whatsapp_channel).to receive(:send_template).exactly(3).times
 
-        perform_enqueued_jobs do
-          described_class.new(campaign: campaign).perform
-        end
+        described_class.new(campaign: campaign).perform
       end
 
       it 'skips contacts without phone numbers' do
@@ -119,9 +113,7 @@ describe Whatsapp::OneoffCampaignService do
 
         expect(whatsapp_channel).not_to receive(:send_template)
 
-        perform_enqueued_jobs do
-          described_class.new(campaign: campaign).perform
-        end
+        described_class.new(campaign: campaign).perform
       end
 
       it 'sends to the contact BSUID when the contact has no phone number and exactly one WhatsApp identity' do
@@ -139,9 +131,7 @@ describe Whatsapp::OneoffCampaignService do
           nil
         )
 
-        perform_enqueued_jobs do
-          described_class.new(campaign: campaign).perform
-        end
+        described_class.new(campaign: campaign).perform
       end
 
       it 'does not send when the contact has parent and regular BSUID aliases' do
@@ -152,9 +142,7 @@ describe Whatsapp::OneoffCampaignService do
 
         expect(whatsapp_channel).not_to receive(:send_template)
 
-        perform_enqueued_jobs do
-          described_class.new(campaign: campaign).perform
-        end
+        described_class.new(campaign: campaign).perform
       end
 
       it 'does not infer lifecycle rotation from conversation presence alone' do
@@ -166,9 +154,7 @@ describe Whatsapp::OneoffCampaignService do
 
         expect(whatsapp_channel).not_to receive(:send_template)
 
-        perform_enqueued_jobs do
-          described_class.new(campaign: campaign).perform
-        end
+        described_class.new(campaign: campaign).perform
       end
 
       it 'does not send when a phone-less contact has multiple WhatsApp identities in the campaign inbox' do
@@ -180,9 +166,7 @@ describe Whatsapp::OneoffCampaignService do
         allow(Rails.logger).to receive(:info)
         expect(whatsapp_channel).not_to receive(:send_template)
 
-        perform_enqueued_jobs do
-          described_class.new(campaign: campaign).perform
-        end
+        described_class.new(campaign: campaign).perform
       end
 
       it 'does not submit authentication templates for BSUID-only contacts' do
@@ -202,9 +186,7 @@ describe Whatsapp::OneoffCampaignService do
         allow(Rails.logger).to receive(:info)
         expect(whatsapp_channel).not_to receive(:send_template)
 
-        perform_enqueued_jobs do
-          described_class.new(campaign: campaign).perform
-        end
+        described_class.new(campaign: campaign).perform
       end
 
       it 'uses template processor service to process templates' do
@@ -215,9 +197,7 @@ describe Whatsapp::OneoffCampaignService do
           .with(channel: whatsapp_channel, template_params: template_params)
           .and_call_original
 
-        perform_enqueued_jobs do
-          described_class.new(campaign: campaign).perform
-        end
+        described_class.new(campaign: campaign).perform
       end
 
       it 'sends template message with correct parameters' do
@@ -243,9 +223,7 @@ describe Whatsapp::OneoffCampaignService do
           nil
         )
 
-        perform_enqueued_jobs do
-          described_class.new(campaign: campaign).perform
-        end
+        described_class.new(campaign: campaign).perform
       end
 
       it 'processes liquid variables in template parameters' do
@@ -288,9 +266,7 @@ describe Whatsapp::OneoffCampaignService do
           nil
         )
 
-        perform_enqueued_jobs do
-          described_class.new(campaign: campaign_with_liquid).perform
-        end
+        described_class.new(campaign: campaign_with_liquid).perform
       end
 
       it 'skips contacts when liquid variables resolve to blank values' do
@@ -314,9 +290,7 @@ describe Whatsapp::OneoffCampaignService do
         expect(Rails.logger).to receive(:info).with("Skipping contact #{contact.name} - liquid variables resolved to blank values")
         allow(Rails.logger).to receive(:info)
 
-        perform_enqueued_jobs do
-          described_class.new(campaign: campaign_with_blank_liquid).perform
-        end
+        described_class.new(campaign: campaign_with_blank_liquid).perform
       end
     end
 
@@ -331,9 +305,7 @@ describe Whatsapp::OneoffCampaignService do
           .with("Skipping contact #{contact.name} - no template_params found for WhatsApp campaign")
         expect(whatsapp_channel).not_to receive(:send_template)
 
-        perform_enqueued_jobs do
-          described_class.new(campaign: campaign).perform
-        end
+        described_class.new(campaign: campaign).perform
       end
     end
 
@@ -353,9 +325,7 @@ describe Whatsapp::OneoffCampaignService do
           .with("Failed to send WhatsApp template message to #{contact_error.phone_number}: #{error_message}")
         expect(Rails.logger).to receive(:error).with(/Backtrace:/)
 
-        perform_enqueued_jobs do
-          described_class.new(campaign: campaign).perform
-        end
+        described_class.new(campaign: campaign).perform
         expect(campaign.reload.completed?).to be true
       end
     end

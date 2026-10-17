@@ -81,18 +81,12 @@ const fullHTML = computed(() => {
   return originalEmailHtml.value;
 });
 
-const isForwarded = computed(
-  () => !!contentAttributes.value?.forwardedMessageId
-);
-
 const unquotedHTML = computed(() =>
-  isForwarded.value
-    ? fullHTML.value
-    : EmailQuoteExtractor.extractQuotes(fullHTML.value)
+  EmailQuoteExtractor.extractQuotes(fullHTML.value)
 );
 
-const hasQuotedMessage = computed(
-  () => !isForwarded.value && EmailQuoteExtractor.hasQuotes(fullHTML.value)
+const hasQuotedMessage = computed(() =>
+  EmailQuoteExtractor.hasQuotes(fullHTML.value)
 );
 
 // Ensure unique keys for <Letter> when toggling between original and translated views.

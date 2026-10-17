@@ -20,12 +20,11 @@ class VoiceAPI extends ApiClient {
       .then(r => r.data);
   }
 
-  joinConference({ conversationId, inboxId, callSid, attemptId }) {
+  joinConference({ conversationId, inboxId, callSid }) {
     return axios
       .post(`${this.baseUrl()}/inboxes/${inboxId}/conference`, {
         conversation_id: conversationId,
         call_sid: callSid,
-        attempt_id: attemptId,
       })
       .then(r => r.data);
   }

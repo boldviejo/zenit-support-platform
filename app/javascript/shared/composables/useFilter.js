@@ -137,7 +137,7 @@ export const useFilter = ({ filteri18nKey, attributeModel }) => {
         filter_operator: 'equal_to',
         values: [
           {
-            id: Number(conversationInbox),
+            id: conversationInbox,
             name: inbox.name,
           },
         ],

@@ -8,7 +8,9 @@ RSpec.describe Internal::TriggerHourlyScheduledItemsJob do
   end
 
   it 'enqueues Shopify reconciliation when the global feature gate is enabled' do
-    create(:installation_config, name: 'ENABLE_SHOPIFY_INTEGRATION', value: true)
+    allow(GlobalConfigService).to receive(:load)
+      .with('ENABLE_SHOPIFY_INTEGRATION', 'false')
+      .and_return(true)
 
     described_class.perform_now
 
@@ -16,7 +18,9 @@ RSpec.describe Internal::TriggerHourlyScheduledItemsJob do
   end
 
   it 'does not enqueue Shopify reconciliation when the global feature gate is disabled' do
-    create(:installation_config, name: 'ENABLE_SHOPIFY_INTEGRATION', value: false)
+    allow(GlobalConfigService).to receive(:load)
+      .with('ENABLE_SHOPIFY_INTEGRATION', 'false')
+      .and_return(false)
 
     described_class.perform_now
 

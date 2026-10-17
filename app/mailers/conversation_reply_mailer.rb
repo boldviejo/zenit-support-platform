@@ -99,7 +99,7 @@ class ConversationReplyMailer < ApplicationMailer
         business_name: business_name
       ).build
     else
-      format_email_with_name(business_name, sender_email)
+      I18n.t('conversations.reply.email.header.professional_name', business_name: business_name, from_email: sender_email)
     end
   end
 
@@ -120,11 +120,15 @@ class ConversationReplyMailer < ApplicationMailer
   end
 
   def mail_subject
-    subject = @message&.forwarded? ? forwarded_subject : @conversation.additional_attributes['mail_subject']
+    subject = @conversation.additional_attributes['mail_subject']
     return "[##{@conversation.display_id}] #{I18n.t('conversations.reply.email_subject')}" if subject.nil?
-    return "Fwd: #{subject}" if @message&.forwarded?
 
-    @conversation.messages.chat.count > 1 ? "Re: #{subject}" : subject
+    chat_count = @conversation.messages.chat.count
+    if chat_count > 1
+      "Re: #{subject}"
+    else
+      subject
+    end
   end
 
   def reply_email
@@ -151,14 +155,11 @@ class ConversationReplyMailer < ApplicationMailer
 
   def custom_message_id
     last_message = @message || @messages&.last
-    return "<forward/#{last_message.id}@#{channel_email_domain}>" if last_message&.forwarded?
 
     "<conversation/#{@conversation.uuid}/messages/#{last_message&.id}@#{channel_email_domain}>"
   end
 
   def in_reply_to_email
-    return if @message&.forwarded?
-
     conversation_reply_email_id || "<account/#{@account.id}/conversation/#{@conversation.uuid}@#{channel_email_domain}>"
   end
 
@@ -174,12 +175,7 @@ class ConversationReplyMailer < ApplicationMailer
   end
 
   def references_header
-    build_references_header(@conversation, in_reply_to_email).presence
-  end
-
-  def forwarded_subject
-    forwarded_message = @conversation.messages.find_by(id: @message.content_attributes['forwarded_message_id'])
-    forwarded_message&.content_attributes&.dig('email', 'subject').presence || @conversation.additional_attributes['mail_subject']
+    build_references_header(@conversation, in_reply_to_email)
   end
 
   def cc_bcc_emails

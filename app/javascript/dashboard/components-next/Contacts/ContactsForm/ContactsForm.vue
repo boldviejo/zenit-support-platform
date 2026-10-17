@@ -97,6 +97,11 @@ const hasCompaniesFeature = computed(
   () =>
     currentAccount.value?.id && isCloudFeatureEnabled(FEATURE_FLAGS.COMPANIES)
 );
+const showCompanySelector = computed(
+  () =>
+    hasCompaniesFeature.value &&
+    (Boolean(state.companyId) || !state.additionalAttributes.companyName)
+);
 
 const emitContactUpdate = async () => {
   const isFormValid = await v$.value.$validate();
@@ -269,8 +274,8 @@ const resetForm = () => {
 };
 
 watch(
-  () => [props.contactData?.id, props.contactData?.companyId],
-  ([id]) => {
+  () => props.contactData?.id,
+  id => {
     if (id) prepareStateBasedOnProps();
   },
   { immediate: true }
@@ -312,17 +317,13 @@ defineExpose({
             :placeholder="item.placeholder"
             :show-border="isDetailsView"
           />
-          <div
-            v-else-if="item.key === 'COMPANY_NAME' && hasCompaniesFeature"
-            class="min-w-0 [&>div>div>button]:h-8"
-          >
-            <CompanySelector
-              :model-value="state.companyId"
-              :selected-name="state.additionalAttributes.companyName"
-              :is-details-view="isDetailsView"
-              @select="handleCompanySelection"
-            />
-          </div>
+          <CompanySelector
+            v-else-if="item.key === 'COMPANY_NAME' && showCompanySelector"
+            :model-value="state.companyId"
+            :selected-name="state.additionalAttributes.companyName"
+            :is-details-view="isDetailsView"
+            @select="handleCompanySelection"
+          />
           <Input
             v-else
             v-model="getFormBinding(item.key).value"

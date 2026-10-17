@@ -46,6 +46,9 @@ const title = computed(() => {
   if (props.featureKey.toUpperCase() === 'HELP_CENTER_SEARCH') {
     return t('CAPTAIN_SETTINGS.FEATURES.HELP_CENTER_SEARCH.TITLE');
   }
+  if (props.featureKey.toUpperCase() === 'LABEL_SUGGESTION') {
+    return t('CAPTAIN_SETTINGS.FEATURES.LABEL_SUGGESTION.TITLE');
+  }
   return '';
 });
 
@@ -55,6 +58,9 @@ const description = computed(() => {
   }
   if (props.featureKey.toUpperCase() === 'HELP_CENTER_SEARCH') {
     return t('CAPTAIN_SETTINGS.FEATURES.HELP_CENTER_SEARCH.DESCRIPTION');
+  }
+  if (props.featureKey.toUpperCase() === 'LABEL_SUGGESTION') {
+    return t('CAPTAIN_SETTINGS.FEATURES.LABEL_SUGGESTION.DESCRIPTION');
   }
   return '';
 });
@@ -66,6 +72,9 @@ const modelTitle = computed(() => {
   if (props.featureKey.toUpperCase() === 'HELP_CENTER_SEARCH') {
     return t('CAPTAIN_SETTINGS.FEATURES.HELP_CENTER_SEARCH.MODEL_TITLE');
   }
+  if (props.featureKey.toUpperCase() === 'LABEL_SUGGESTION') {
+    return t('CAPTAIN_SETTINGS.FEATURES.LABEL_SUGGESTION.MODEL_TITLE');
+  }
   return '';
 });
 
@@ -75,6 +84,9 @@ const modelDescription = computed(() => {
   }
   if (props.featureKey.toUpperCase() === 'HELP_CENTER_SEARCH') {
     return t('CAPTAIN_SETTINGS.FEATURES.HELP_CENTER_SEARCH.MODEL_DESCRIPTION');
+  }
+  if (props.featureKey.toUpperCase() === 'LABEL_SUGGESTION') {
+    return t('CAPTAIN_SETTINGS.FEATURES.LABEL_SUGGESTION.MODEL_DESCRIPTION');
   }
   return '';
 });

@@ -1,4 +1,4 @@
-class Captain::AssistantActionSchema < Schematist::Schema
+class Captain::AssistantActionSchema < RubyLLM::Schema
   ACTIONS = %w[continue handoff].freeze
   REASONS = %w[
     general_product_question

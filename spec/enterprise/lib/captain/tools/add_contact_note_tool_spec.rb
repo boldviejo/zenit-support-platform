@@ -16,13 +16,12 @@ RSpec.describe Captain::Tools::AddContactNoteTool, type: :model do
     end
   end
 
-  describe '#parameters_schema' do
+  describe '#parameters' do
     it 'returns the correct parameters' do
-      properties = tool.parameters_schema.fetch('properties')
-
-      expect(properties).to have_key('note')
-      expect(properties['note']['type']).to eq('string')
-      expect(properties['note']['description']).to eq('The note content to add to the contact')
+      expect(tool.parameters).to have_key(:note)
+      expect(tool.parameters[:note].name).to eq(:note)
+      expect(tool.parameters[:note].type).to eq('string')
+      expect(tool.parameters[:note].description).to eq('The note content to add to the contact')
     end
   end
 

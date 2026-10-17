@@ -70,17 +70,12 @@ class AccountBuilder
   end
 
   def create_user
-    @user = build_user
-    @user.save!
-  end
-
-  def build_user
     @user = User.new(email: @email,
                      password: user_password,
                      password_confirmation: user_password,
                      name: user_full_name)
     @user.type = 'SuperAdmin' if @super_admin
     @user.confirm if @confirmed
-    @user
+    @user.save!
   end
 end

@@ -6,42 +6,34 @@ class CaptainCustomTools extends ApiClient {
     super('captain/custom_tools', { accountScoped: true });
   }
 
-  get({ assistantId, page = 1, searchKey, signal } = {}) {
+  get({ page = 1, searchKey } = {}) {
     return axios.get(this.url, {
-      params: { assistant_id: assistantId, page, searchKey },
-      signal,
+      params: { page, searchKey },
     });
   }
 
-  show({ id, assistantId }) {
-    return axios.get(`${this.url}/${id}`, {
-      params: { assistant_id: assistantId },
-    });
+  show(id) {
+    return axios.get(`${this.url}/${id}`);
   }
 
-  create({ assistantId, ...data } = {}) {
+  create(data = {}) {
     return axios.post(this.url, {
-      assistant_id: assistantId,
       custom_tool: data,
     });
   }
 
-  update(id, { assistantId, ...data } = {}) {
+  update(id, data = {}) {
     return axios.put(`${this.url}/${id}`, {
-      assistant_id: assistantId,
       custom_tool: data,
     });
   }
 
-  delete({ id, assistantId }) {
-    return axios.delete(`${this.url}/${id}`, {
-      params: { assistant_id: assistantId },
-    });
+  delete(id) {
+    return axios.delete(`${this.url}/${id}`);
   }
 
-  test({ assistantId, ...data } = {}) {
+  test(data = {}) {
     return axios.post(`${this.url}/test`, {
-      assistant_id: assistantId,
       custom_tool: data,
     });
   }

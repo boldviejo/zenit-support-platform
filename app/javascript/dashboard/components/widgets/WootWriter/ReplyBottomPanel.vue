@@ -119,6 +119,14 @@ export default {
       type: String,
       default: '',
     },
+    showQuotedReplyToggle: {
+      type: Boolean,
+      default: false,
+    },
+    quotedReplyEnabled: {
+      type: Boolean,
+      default: false,
+    },
     isEditorDisabled: {
       type: Boolean,
       default: false,
@@ -128,6 +136,7 @@ export default {
     'toggleInsertArticle',
     'selectWhatsappTemplate',
     'selectContentTemplate',
+    'toggleQuotedReply',
     'requestContactInfoTemplate',
   ],
   setup(props) {
@@ -253,6 +262,11 @@ export default {
     isFetchingAppIntegrations() {
       return this.uiFlags.isFetching;
     },
+    quotedReplyToggleTooltip() {
+      return this.quotedReplyEnabled
+        ? this.$t('CONVERSATION.REPLYBOX.QUOTED_REPLY.DISABLE_TOOLTIP')
+        : this.$t('CONVERSATION.REPLYBOX.QUOTED_REPLY.ENABLE_TOOLTIP');
+    },
   },
   mounted() {
     ActiveStorage.start();
@@ -331,6 +345,16 @@ export default {
         faded
         sm
         @click="toggleMessageSignature"
+      />
+      <NextButton
+        v-if="showQuotedReplyToggle"
+        v-tooltip.top-end="quotedReplyToggleTooltip"
+        icon="i-ph-quotes"
+        :variant="quotedReplyEnabled ? 'solid' : 'faded'"
+        color="slate"
+        sm
+        :aria-pressed="quotedReplyEnabled"
+        @click="$emit('toggleQuotedReply')"
       />
       <NextButton
         v-if="enableWhatsAppTemplates"

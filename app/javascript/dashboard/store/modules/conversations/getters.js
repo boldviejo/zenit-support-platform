@@ -1,7 +1,7 @@
 import { MESSAGE_TYPE } from 'shared/constants/messages';
 import { applyPageFilters, applyRoleFilter, sortComparator } from './helpers';
 import filterQueryGenerator from 'dashboard/helper/filterQueryGenerator';
-import { createFiltersMatcher } from './helpers/filterHelpers';
+import { matchesFilters } from './helpers/filterHelpers';
 import {
   getUserPermissions,
   getUserRole,
@@ -30,11 +30,13 @@ const getters = {
 
     const permissions = getUserPermissions(currentUser, currentAccountId);
     const userRole = getUserRole(currentUser, currentAccountId);
-    const matchesFilters = createFiltersMatcher(appliedFilters);
 
     return allConversations
       .filter(conversation => {
-        const matchesFilterResult = matchesFilters(conversation);
+        const matchesFilterResult = matchesFilters(
+          conversation,
+          appliedFilters
+        );
         const allowedForRole = applyRoleFilter(
           conversation,
           userRole,
@@ -64,13 +66,8 @@ const getters = {
     const selectedChat = _getters.getSelectedChat;
     const { messages = [] } = selectedChat;
     const lastEmail = [...messages].reverse().find(message => {
-      const {
-        message_type: messageType,
-        content_attributes: contentAttributes,
-      } = message;
-      if (message.private || contentAttributes?.forwarded_message_id) {
-        return false;
-      }
+      const { message_type: messageType } = message;
+      if (message.private) return false;
 
       return [MESSAGE_TYPE.OUTGOING, MESSAGE_TYPE.INCOMING].includes(
         messageType
@@ -106,9 +103,7 @@ const getters = {
   },
   getAppliedConversationFiltersQuery: _state => {
     const hasAppliedFilters = _state.appliedFilters.length !== 0;
-    return hasAppliedFilters
-      ? filterQueryGenerator(_state.appliedFilters, { useLocalTimezone: false })
-      : [];
+    return hasAppliedFilters ? filterQueryGenerator(_state.appliedFilters) : [];
   },
   getUnAssignedChats: _state => activeFilters => {
     return _state.allConversations.filter(conversation => {

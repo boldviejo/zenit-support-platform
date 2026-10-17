@@ -32,7 +32,6 @@ export const DEFAULT_ICON_COLOR = '#3B82F6';
 export const PICKER_MODE = {
   BOTH: 'both',
   EMOJI: 'emoji',
-  ICON: 'icon',
 };
 
 export const PICKER_TAB = {

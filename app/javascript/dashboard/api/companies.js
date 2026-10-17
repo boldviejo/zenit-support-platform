@@ -24,25 +24,16 @@ class CompanyAPI extends ApiClient {
     return axios.get(requestURL);
   }
 
-  listContacts(id, page = 1, q = undefined) {
-    return axios.get(`${this.url}/${id}/contacts?${buildParams({ page, q })}`);
+  listContacts(id, page = 1) {
+    return axios.get(`${this.url}/${id}/contacts?${buildParams({ page })}`);
   }
 
-  listNotes(id, page = 1, q = undefined) {
-    return axios.get(`${this.url}/${id}/notes?${buildParams({ page, q })}`);
+  listNotes(id) {
+    return axios.get(`${this.url}/${id}/notes`);
   }
 
-  listConversations(id, page = 1) {
-    return axios.get(
-      `${this.url}/${id}/conversations?${buildParams({ page })}`
-    );
-  }
-
-  filterConversations(id, payload, page = 1) {
-    return axios.post(`${this.url}/${id}/conversations/filter`, {
-      payload,
-      page,
-    });
+  listConversations(id) {
+    return axios.get(`${this.url}/${id}/conversations`);
   }
 
   searchContacts(id, query = '', page = 1) {
@@ -62,10 +53,6 @@ class CompanyAPI extends ApiClient {
     return axios.post(`${this.url}/${id}/destroy_custom_attributes`, {
       custom_attributes: customAttributes,
     });
-  }
-
-  enrich(id) {
-    return axios.post(`${this.url}/${id}/enrichment`);
   }
 
   destroyAvatar(id) {

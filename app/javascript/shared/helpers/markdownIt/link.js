@@ -59,9 +59,8 @@ const buildMentionTokens = () => (state, silent) => {
   return true;
 };
 
-// The label is raw source text; escape it so a mention can't smuggle HTML past `html: false`.
-const renderMentions = md => (tokens, idx) => {
-  return `<span class="prosemirror-mention-node">${md.utils.escapeHtml(tokens[idx].content)}</span>`;
+const renderMentions = () => (tokens, idx) => {
+  return `<span class="prosemirror-mention-node">${tokens[idx].content}</span>`;
 };
 
 export default function mentionPlugin(md) {

@@ -11,7 +11,6 @@ import FormInput from '../../components/Form/Input.vue';
 import NextButton from 'dashboard/components-next/button/Button.vue';
 
 const props = defineProps({
-  ssoAccountId: { type: String, default: '' },
   authError: {
     type: String,
     default: '',
@@ -19,10 +18,6 @@ const props = defineProps({
   target: {
     type: String,
     default: 'web',
-  },
-  redirectUrl: {
-    type: String,
-    default: '',
   },
 });
 
@@ -61,18 +56,6 @@ const v$ = useVuelidate(validations, { credentials });
 
 const globalConfig = computed(() => store.getters['globalConfig/get']);
 const csrfToken = ref('');
-const loginRoute = computed(() => {
-  const route = { name: 'login' };
-  return props.redirectUrl || props.ssoAccountId
-    ? {
-        ...route,
-        query: {
-          redirect_url: props.redirectUrl,
-          ...(props.ssoAccountId ? { sso_account_id: props.ssoAccountId } : {}),
-        },
-      }
-    : route;
-});
 
 onMounted(async () => {
   csrfToken.value =
@@ -129,19 +112,6 @@ onMounted(async () => {
           :value="csrfToken"
         />
         <input type="hidden" class="h-0" name="target" :value="target" />
-        <input
-          v-if="redirectUrl"
-          type="hidden"
-          class="h-0"
-          name="redirect_url"
-          :value="redirectUrl"
-        />
-        <input
-          v-if="ssoAccountId"
-          type="hidden"
-          name="sso_account_id"
-          :value="ssoAccountId"
-        />
         <NextButton
           lg
           type="submit"
@@ -154,7 +124,7 @@ onMounted(async () => {
       </form>
     </section>
     <p class="mt-6 text-sm text-center text-n-slate-11">
-      <router-link :to="loginRoute" class="text-link text-n-brand">
+      <router-link to="/app/login" class="text-link text-n-brand">
         {{ t('LOGIN.SAML.BACK_TO_LOGIN') }}
       </router-link>
     </p>

@@ -1,7 +1,5 @@
 <script setup>
-import { useI18n } from 'vue-i18n';
 import ToggleSwitch from 'dashboard/components-next/switch/Switch.vue';
-import Label from 'dashboard/components-next/label/Label.vue';
 
 defineProps({
   header: {
@@ -20,13 +18,8 @@ defineProps({
     type: Boolean,
     default: false,
   },
-  beta: {
-    type: Boolean,
-    default: false,
-  },
 });
 
-const { t } = useI18n();
 const modelValue = defineModel({ type: Boolean, default: false });
 </script>
 
@@ -36,12 +29,9 @@ const modelValue = defineModel({ type: Boolean, default: false });
   >
     <div class="flex flex-col gap-1 items-start w-full py-3">
       <div class="flex items-center gap-3 w-full justify-between px-4">
-        <div class="flex items-center gap-2">
-          <span class="text-heading-3 text-n-slate-12">
-            {{ header }}
-          </span>
-          <Label v-if="beta" :label="t('GENERAL.BETA')" color="blue" compact />
-        </div>
+        <span class="text-heading-3 text-n-slate-12">
+          {{ header }}
+        </span>
         <template v-if="hideToggle">
           <slot name="hiddenToggle">
             <div class="size-2" />

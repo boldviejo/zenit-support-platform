@@ -42,10 +42,6 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
-  showEdit: {
-    type: Boolean,
-    default: false,
-  },
   showAnalytics: {
     type: Boolean,
     default: false,
@@ -63,15 +59,6 @@ const { formatMessage } = useMessageFormatter();
 
 const isActive = computed(() =>
   props.isLiveChatType ? props.isEnabled : props.status !== STATUS_COMPLETED
-);
-
-// A processing campaign is already sending, so edits cannot apply to the run.
-const isEditable = computed(
-  () =>
-    props.isLiveChatType ||
-    (props.showEdit &&
-      props.status !== STATUS_COMPLETED &&
-      props.status !== STATUS_PROCESSING)
 );
 
 const statusTextColor = computed(() => ({
@@ -156,7 +143,7 @@ const inboxIcon = computed(() => {
         @click="emit('analytics')"
       />
       <Button
-        v-if="isEditable"
+        v-if="isLiveChatType"
         variant="faded"
         size="sm"
         color="slate"

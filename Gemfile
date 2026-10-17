@@ -20,6 +20,7 @@ gem 'kaminari'
 gem 'responders', '>= 3.1.1'
 gem 'rest-client'
 gem 'telephone_number'
+gem 'time_diff'
 gem 'tzinfo-data'
 gem 'valid_email2'
 gem 'email-provider-info'
@@ -53,7 +54,6 @@ gem 'csv-safe'
 
 ##-- for active storage --##
 gem 'aws-sdk-s3', require: false
-gem 'aws-sdk-sesv2', require: false
 gem 'azure-blob', require: false
 gem 'google-cloud-storage', '>= 1.48.0', require: false
 gem 'image_processing'
@@ -144,8 +144,6 @@ gem 'speedshop-cloudwatch', '~> 0.2.1', require: false
 
 ##-- Push notification service --##
 gem 'fcm'
-# APNs VoIP pushes that ring iPhones through CallKit
-gem 'apnotic', '~> 1.8'
 gem 'web-push', '>= 3.0.1'
 
 ##-- geocoding / parse location from ip --##
@@ -200,9 +198,11 @@ gem 'reverse_markdown'
 
 gem 'iso-639'
 gem 'ruby-openai'
-gem 'ai-agents', '~> 0.13.0'
+gem 'ai-agents', '>= 0.12.0'
 
-gem 'ruby_llm', '~> 2.0.0'
+# TODO: Move this gem as a dependency of ai-agents
+gem 'ruby_llm', '>= 1.14.1'
+gem 'ruby_llm-schema'
 
 gem 'cld3', '~> 3.7'
 

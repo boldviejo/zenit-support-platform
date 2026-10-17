@@ -69,12 +69,11 @@ class ActionCableListener < BaseListener
     broadcast(account, tokens, CONVERSATION_CREATED, conversation.push_event_data)
   end
 
-  def conversation_bot_handoff(event)
-    broadcast_to_inbox_members(event, CONVERSATION_BOT_HANDOFF)
-  end
-
   def conversation_read(event)
-    broadcast_to_inbox_members(event, CONVERSATION_READ)
+    conversation, account = extract_conversation_and_account(event)
+    tokens = user_tokens(account, conversation.inbox.members)
+
+    broadcast(account, tokens, CONVERSATION_READ, conversation.push_event_data)
   end
 
   def conversation_status_changed(event)
@@ -133,20 +132,24 @@ class ActionCableListener < BaseListener
   end
 
   def assignee_changed(event)
-    # Model callbacks identify automatic assignment (auto-assignment or automation
-    # rules) by performed_by. The V2 AssignmentService also dispatches an event with
-    # user (the assigned agent, NOT the performer). Neither requires inferring
-    # automation from a missing Current.user.
-    automatic_assignment = [Inbox, AssignmentPolicy, AutomationRule].include?(event.data[:performed_by].class) || event.data[:user].present?
-    broadcast_to_inbox_members(event, ASSIGNEE_CHANGED, automatic_assignment: automatic_assignment)
+    conversation, account = extract_conversation_and_account(event)
+    tokens = user_tokens(account, conversation.inbox.members)
+
+    broadcast(account, tokens, ASSIGNEE_CHANGED, conversation.push_event_data)
   end
 
   def team_changed(event)
-    broadcast_to_inbox_members(event, TEAM_CHANGED)
+    conversation, account = extract_conversation_and_account(event)
+    tokens = user_tokens(account, conversation.inbox.members)
+
+    broadcast(account, tokens, TEAM_CHANGED, conversation.push_event_data)
   end
 
   def conversation_contact_changed(event)
-    broadcast_to_inbox_members(event, CONVERSATION_CONTACT_CHANGED)
+    conversation, account = extract_conversation_and_account(event)
+    tokens = user_tokens(account, conversation.inbox.members)
+
+    broadcast(account, tokens, CONVERSATION_CONTACT_CHANGED, conversation.push_event_data)
   end
 
   def contact_created(event)
@@ -180,12 +183,6 @@ class ActionCableListener < BaseListener
   end
 
   private
-
-  def broadcast_to_inbox_members(event, event_name, **metadata)
-    conversation, account = extract_conversation_and_account(event)
-
-    broadcast(account, user_tokens(account, conversation.inbox.members), event_name, conversation.push_event_data.merge(metadata))
-  end
 
   def account_token(account)
     "account_#{account.id}"

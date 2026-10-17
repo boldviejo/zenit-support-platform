@@ -3,9 +3,7 @@ import ConversationApi from '../../../api/inbox/conversation';
 import MessageApi from '../../../api/inbox/message';
 import { MESSAGE_STATUS, MESSAGE_TYPE } from 'shared/constants/messages';
 import { createPendingMessage } from 'dashboard/helper/commons';
-import filterQueryGenerator, {
-  withTimestampTimezone,
-} from 'dashboard/helper/filterQueryGenerator';
+import filterQueryGenerator from 'dashboard/helper/filterQueryGenerator';
 import {
   buildConversationList,
   isOnMentionsView,
@@ -429,16 +427,6 @@ const actions = {
     }
   },
 
-  getContactInfoRequestAvailability: async (_, { conversationId, signal }) => {
-    const { data } = await ConversationApi.getContactInfoRequestAvailability(
-      conversationId,
-      {
-        signal,
-      }
-    );
-    return data;
-  },
-
   requestContactInfo: async ({ commit }, conversationId) => {
     const { data } = await ConversationApi.requestContactInfo(conversationId);
     commit(types.ADD_MESSAGE, data);
@@ -642,14 +630,13 @@ const actions = {
     { commit, dispatch },
     { filters, sortBy = null }
   ) => {
-    const appliedFilters = filters.map(withTimestampTimezone);
-    commit(types.SET_CONVERSATION_FILTERS, appliedFilters);
+    commit(types.SET_CONVERSATION_FILTERS, filters);
     commit(types.SET_CONVERSATION_FILTERS_SORT, sortBy);
     commit(types.EMPTY_ALL_CONVERSATION);
     dispatch('conversationPage/reset', {}, { root: true });
 
     return dispatch('fetchFilteredConversations', {
-      queryData: filterQueryGenerator(appliedFilters),
+      queryData: filterQueryGenerator(filters),
       page: 1,
     });
   },

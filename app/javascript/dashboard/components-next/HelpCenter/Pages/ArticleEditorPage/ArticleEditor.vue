@@ -228,7 +228,6 @@ const handleCreateArticle = event => {
           @save-article="values => emit('saveArticle', values)"
           @set-author="setAuthorId"
           @set-category="setCategoryId"
-          @preview-article="previewArticle"
         />
       </div>
       <FullEditor

@@ -13,9 +13,10 @@ const props = defineProps({
 
 const { t } = useI18n();
 
-const formatScore = value => (Number.isFinite(value) ? value.toFixed(1) : '—');
+const formatScore = value =>
+  value === null ? '—' : Number(value || 0).toFixed(1);
 const formatTrend = value => {
-  if (!Number.isFinite(value)) return '';
+  if (value === null) return '';
 
   const numericValue = Number(value || 0);
   if (numericValue === 0) return '0';
@@ -25,11 +26,9 @@ const formatTrend = value => {
 
 const comparison = score => {
   const humanOnlyScore = props.humanOnly?.current;
-  if (!Number.isFinite(score?.current) || !Number.isFinite(humanOnlyScore)) {
-    return '';
-  }
+  if (humanOnlyScore === null || humanOnlyScore === undefined) return '';
 
-  const delta = score.current - humanOnlyScore;
+  const delta = Number(score?.current || 0) - Number(humanOnlyScore);
   return t('CAPTAIN.OVERVIEW.V2.CSAT.VS_HUMANS', {
     value: formatTrend(delta),
   });

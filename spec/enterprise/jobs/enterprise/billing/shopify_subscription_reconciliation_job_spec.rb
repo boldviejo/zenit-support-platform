@@ -23,7 +23,9 @@ RSpec.describe Enterprise::Billing::ShopifySubscriptionReconciliationJob do
 
   before do
     allow(GlobalConfigService).to receive(:load).and_call_original
-    create(:installation_config, name: 'ENABLE_SHOPIFY_INTEGRATION', value: true)
+    allow(GlobalConfigService).to receive(:load)
+      .with('ENABLE_SHOPIFY_INTEGRATION', 'false')
+      .and_return(true)
 
     eligible_account.enable_features!('shopify_integration')
     stripe_account.enable_features!('shopify_integration')
@@ -62,7 +64,9 @@ RSpec.describe Enterprise::Billing::ShopifySubscriptionReconciliationJob do
   end
 
   it 'does not enqueue reconciliation when the global gate is disabled' do
-    InstallationConfig.where(name: 'ENABLE_SHOPIFY_INTEGRATION').first_or_initialize.update!(value: false)
+    allow(GlobalConfigService).to receive(:load)
+      .with('ENABLE_SHOPIFY_INTEGRATION', 'false')
+      .and_return(false)
     expect(Enterprise::Billing::ShopifySubscriptionSyncJob).not_to receive(:perform_later)
 
     described_class.perform_now

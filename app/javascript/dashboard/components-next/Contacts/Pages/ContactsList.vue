@@ -34,10 +34,7 @@ const selectedIdsSet = computed(() => new Set(props.selectedContactIds || []));
 
 const updateContact = async updatedData => {
   try {
-    await store.dispatch('contacts/update', {
-      ...updatedData,
-      resolveLegacyCompany: true,
-    });
+    await store.dispatch('contacts/update', updatedData);
     useAlert(t('CONTACTS_LAYOUT.CARD.EDIT_DETAILS_FORM.SUCCESS_MESSAGE'));
   } catch (error) {
     const i18nPrefix = 'CONTACTS_LAYOUT.CARD.EDIT_DETAILS_FORM.FORM';

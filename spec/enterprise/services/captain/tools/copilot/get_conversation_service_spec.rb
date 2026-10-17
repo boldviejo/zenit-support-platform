@@ -18,9 +18,9 @@ RSpec.describe Captain::Tools::Copilot::GetConversationService do
     end
   end
 
-  describe '#parameters_schema' do
+  describe '#parameters' do
     it 'defines conversation_id parameter' do
-      expect(service.parameters_schema.fetch('properties').keys).to contain_exactly('conversation_id')
+      expect(service.parameters.keys).to contain_exactly(:conversation_id)
     end
   end
 

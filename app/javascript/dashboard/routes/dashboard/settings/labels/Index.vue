@@ -138,13 +138,13 @@ onBeforeMount(() => {
         <template #row="{ items }">
           <BaseTableRow v-for="label in items" :key="label.title" :item="label">
             <template #default>
-              <BaseTableCell class="whitespace-nowrap">
+              <BaseTableCell>
                 <span class="text-body-main text-n-slate-12">
                   {{ label.title }}
                 </span>
               </BaseTableCell>
 
-              <BaseTableCell class="w-full">
+              <BaseTableCell>
                 <span class="text-body-main text-n-slate-11">
                   {{ label.description }}
                 </span>

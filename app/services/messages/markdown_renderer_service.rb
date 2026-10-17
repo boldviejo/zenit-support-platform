@@ -42,7 +42,7 @@ class Messages::MarkdownRendererService
 
   def render_html
     markdown_renderer = BaseMarkdownRenderer.new
-    doc = CommonMarker.render_doc(@content, :DEFAULT, [:strikethrough, :table])
+    doc = CommonMarker.render_doc(@content, :DEFAULT, [:strikethrough])
     markdown_renderer.render(doc)
   end
 

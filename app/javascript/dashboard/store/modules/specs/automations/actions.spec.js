@@ -39,11 +39,8 @@ describe('#actions', () => {
       ]);
     });
     it('sends correct actions if API is error', async () => {
-      const error = Object.assign(new Error('Incorrect header'), {
-        response: { data: { error: 'monitor_not_available' } },
-      });
-      axios.post.mockRejectedValue(error);
-      await expect(actions.create({ commit })).rejects.toBe(error);
+      axios.post.mockRejectedValue({ message: 'Incorrect header' });
+      await expect(actions.create({ commit })).rejects.toThrow(Error);
       expect(commit.mock.calls).toEqual([
         [types.default.SET_AUTOMATION_UI_FLAG, { isCreating: true }],
         [types.default.SET_AUTOMATION_UI_FLAG, { isCreating: false }],
@@ -64,13 +61,10 @@ describe('#actions', () => {
       ]);
     });
     it('sends correct actions if API is error', async () => {
-      const error = Object.assign(new Error('Incorrect header'), {
-        response: { data: { error: 'monitor_not_available' } },
-      });
-      axios.patch.mockRejectedValue(error);
-      await expect(actions.update({ commit }, automationsList[0])).rejects.toBe(
-        error
-      );
+      axios.patch.mockRejectedValue({ message: 'Incorrect header' });
+      await expect(
+        actions.update({ commit }, automationsList[0])
+      ).rejects.toThrow(Error);
       expect(commit.mock.calls).toEqual([
         [types.default.SET_AUTOMATION_UI_FLAG, { isUpdating: true }],
         [types.default.SET_AUTOMATION_UI_FLAG, { isUpdating: false }],

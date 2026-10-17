@@ -19,7 +19,7 @@ describe Voice::Provider::Twilio::Adapter do
     allow(calls_double).to receive(:create).and_return(call_instance)
 
     allow(Twilio::REST::Client).to receive(:new)
-      .with(channel.api_key_sid, channel.api_key_secret, channel.account_sid)
+      .with(channel.account_sid, channel.auth_token)
       .and_return(client_double)
 
     result = adapter.initiate_call(to: '+15550001111', conference_sid: 'CF999', agent_id: 42)

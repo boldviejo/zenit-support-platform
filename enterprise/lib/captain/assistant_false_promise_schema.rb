@@ -1,4 +1,4 @@
-class Captain::AssistantFalsePromiseSchema < Schematist::Schema
+class Captain::AssistantFalsePromiseSchema < RubyLLM::Schema
   DECISIONS = %w[safe future_work_promise].freeze
   REASONS = %w[
     safe_response

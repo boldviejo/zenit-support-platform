@@ -16,13 +16,12 @@ RSpec.describe Captain::Tools::UpdatePriorityTool, type: :model do
     end
   end
 
-  describe '#parameters_schema' do
+  describe '#parameters' do
     it 'returns the correct parameters' do
-      properties = tool.parameters_schema.fetch('properties')
-
-      expect(properties).to have_key('priority')
-      expect(properties['priority']['type']).to eq('string')
-      expect(properties['priority']['description']).to eq('The priority level: low, medium, high, urgent, or nil to remove priority')
+      expect(tool.parameters).to have_key(:priority)
+      expect(tool.parameters[:priority].name).to eq(:priority)
+      expect(tool.parameters[:priority].type).to eq('string')
+      expect(tool.parameters[:priority].description).to eq('The priority level: low, medium, high, urgent, or nil to remove priority')
     end
   end
 

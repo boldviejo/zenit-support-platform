@@ -47,7 +47,7 @@ export default {
       default: false,
     },
   },
-  emits: ['open', 'close', 'replyTo', 'forwardEmail'],
+  emits: ['open', 'close', 'replyTo'],
   setup() {
     const { getPlainText } = useMessageFormatter();
 
@@ -140,10 +140,6 @@ export default {
       this.$emit('replyTo', this.message);
       this.handleClose();
     },
-    handleForwardEmail() {
-      this.$emit('forwardEmail');
-      this.handleClose();
-    },
     openDeleteModal() {
       this.handleClose();
       this.showDeleteModal = true;
@@ -212,15 +208,6 @@ export default {
       @close="handleClose"
     >
       <div class="menu-container">
-        <MenuItem
-          v-if="enabledOptions['forwardEmail']"
-          :option="{
-            icon: 'arrow-forward',
-            label: $t('CONVERSATION.CONTEXT_MENU.FORWARD_EMAIL'),
-          }"
-          variant="icon"
-          @click.stop="handleForwardEmail"
-        />
         <MenuItem
           v-if="enabledOptions['replyTo']"
           :option="{

@@ -4,7 +4,6 @@ import { useToggle } from '@vueuse/core';
 import { useI18n } from 'vue-i18n';
 import { dynamicTime } from 'shared/helpers/timeHelper';
 import { useExactTimestamp } from 'shared/composables/useExactTimestamp';
-import { useAdmin } from 'dashboard/composables/useAdmin';
 
 import CardLayout from 'dashboard/components-next/CardLayout.vue';
 import DropdownMenu from 'dashboard/components-next/dropdown-menu/DropdownMenu.vue';
@@ -45,10 +44,6 @@ const props = defineProps({
     type: Number,
     required: true,
   },
-  sourceMetadata: {
-    type: Object,
-    default: null,
-  },
 });
 
 const emit = defineEmits(['action', 'toggle']);
@@ -56,7 +51,6 @@ const emit = defineEmits(['action', 'toggle']);
 const exactTimestamp = useExactTimestamp();
 
 const { t } = useI18n();
-const { isAdmin } = useAdmin();
 
 const [showActionsDropdown, toggleDropdown] = useToggle();
 
@@ -71,21 +65,13 @@ const statusLabel = computed(() =>
     : t('CAPTAIN.CUSTOM_TOOLS.STATUS.DISABLED')
 );
 
-// Tools installed from a manifest are read-only, so they can be viewed but not edited
 const menuItems = computed(() => [
-  props.sourceMetadata
-    ? {
-        label: t('CAPTAIN.CUSTOM_TOOLS.OPTIONS.VIEW_TOOL'),
-        value: 'view',
-        action: 'view',
-        icon: 'i-lucide-eye',
-      }
-    : {
-        label: t('CAPTAIN.CUSTOM_TOOLS.OPTIONS.EDIT_TOOL'),
-        value: 'edit',
-        action: 'edit',
-        icon: 'i-lucide-pencil-line',
-      },
+  {
+    label: t('CAPTAIN.CUSTOM_TOOLS.OPTIONS.EDIT_TOOL'),
+    value: 'edit',
+    action: 'edit',
+    icon: 'i-lucide-pencil-line',
+  },
   {
     label: t('CAPTAIN.CUSTOM_TOOLS.OPTIONS.DELETE_TOOL'),
     value: 'delete',
@@ -98,13 +84,6 @@ const timestamp = computed(() =>
   dynamicTime(props.updatedAt || props.createdAt)
 );
 
-// Admins edit tools they created; installed tools, and any tool for agents, open read-only
-const openTool = () =>
-  emit('action', {
-    action: isAdmin.value && !props.sourceMetadata ? 'edit' : 'view',
-    id: props.id,
-  });
-
 const handleAction = ({ action, value }) => {
   toggleDropdown(false);
   emit('action', { action, value, id: props.id });
@@ -115,25 +94,14 @@ const authTypeLabel = computed(() => {
     `CAPTAIN.CUSTOM_TOOLS.FORM.AUTH_TYPES.${props.authType.toUpperCase()}`
   );
 });
-
-const sourceIdentifier = computed(() =>
-  props.sourceMetadata
-    ? `${props.sourceMetadata.repository}/${props.sourceMetadata.path}`
-    : ''
-);
 </script>
 
 <template>
   <CardLayout class="relative">
     <div class="flex relative justify-between w-full gap-1">
-      <button
-        type="button"
-        data-test="tool-title"
-        class="p-0 text-base text-start text-n-slate-12 line-clamp-1 font-medium hover:underline"
-        @click="openTool"
-      >
+      <span class="text-base text-n-slate-12 line-clamp-1 font-medium">
         {{ title }}
-      </button>
+      </span>
       <div class="flex items-center gap-2">
         <span class="text-xs text-n-slate-11">
           {{ statusLabel }}
@@ -182,13 +150,6 @@ const sourceIdentifier = computed(() =>
         >
           <i class="i-lucide-lock text-base" />
           {{ authTypeLabel }}
-        </span>
-        <span
-          v-if="sourceIdentifier"
-          class="text-sm shrink-0 text-n-slate-11 inline-flex items-center gap-1 font-mono"
-        >
-          <i class="i-lucide-box text-base" />
-          {{ sourceIdentifier }}
         </span>
       </div>
       <span

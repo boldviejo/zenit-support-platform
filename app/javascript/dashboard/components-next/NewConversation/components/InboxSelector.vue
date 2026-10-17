@@ -33,10 +33,6 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  removable: {
-    type: Boolean,
-    default: true,
-  },
 });
 
 const emit = defineEmits([
@@ -61,14 +57,12 @@ const targetInboxLabel = computed(() => {
     </label>
     <div
       v-if="targetInbox"
-      class="flex items-center gap-1.5 rounded-md bg-n-alpha-2 truncate h-7 min-w-0"
-      :class="removable ? 'ltr:pl-3 rtl:pr-3 ltr:pr-1 rtl:pl-1' : 'px-3'"
+      class="flex items-center gap-1.5 rounded-md bg-n-alpha-2 truncate ltr:pl-3 rtl:pr-3 ltr:pr-1 rtl:pl-1 h-7 min-w-0"
     >
       <span class="text-sm truncate text-n-slate-12">
         {{ targetInboxLabel }}
       </span>
       <Button
-        v-if="removable"
         variant="ghost"
         icon="i-lucide-x"
         color="slate"

@@ -15,18 +15,6 @@ class Captain::CustomToolPolicy < ApplicationPolicy
     @account_user.administrator?
   end
 
-  def installed?
-    true
-  end
-
-  def preview?
-    @account_user.administrator?
-  end
-
-  def install?
-    @account_user.administrator?
-  end
-
   def update?
     @account_user.administrator?
   end

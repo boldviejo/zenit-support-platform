@@ -17,8 +17,7 @@ module Shopify::IntegrationHelper
   def token_payload(account_id)
     {
       sub: account_id,
-      iat: Time.current.to_i,
-      exp: 10.minutes.from_now.to_i
+      iat: Time.current.to_i
     }
   end
 

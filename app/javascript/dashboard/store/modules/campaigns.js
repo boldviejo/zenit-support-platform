@@ -10,7 +10,6 @@ export const state = {
   records: [],
   uiFlags: {
     isFetching: false,
-    hasFetched: false,
     isCreating: false,
   },
 };
@@ -63,10 +62,7 @@ export const actions = {
     } catch (error) {
       // Ignore error
     } finally {
-      commit(types.SET_CAMPAIGN_UI_FLAG, {
-        isFetching: false,
-        hasFetched: true,
-      });
+      commit(types.SET_CAMPAIGN_UI_FLAG, { isFetching: false });
     }
   },
   create: async function createCampaign({ commit }, campaignObj) {

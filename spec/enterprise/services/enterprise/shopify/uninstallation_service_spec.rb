@@ -49,7 +49,9 @@ RSpec.describe Shopify::UninstallationService do
   before do
     account.enable_features!('shopify_integration')
     allow(GlobalConfigService).to receive(:load).and_call_original
-    create(:installation_config, name: 'ENABLE_SHOPIFY_INTEGRATION', value: true)
+    allow(GlobalConfigService).to receive(:load)
+      .with('ENABLE_SHOPIFY_INTEGRATION', 'false')
+      .and_return(true)
     allow(Enterprise::Billing::ShopifySubscriptionSyncService).to receive(:new)
       .with(account: account)
       .and_return(sync_service)
