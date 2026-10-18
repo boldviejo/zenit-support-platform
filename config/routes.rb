@@ -114,7 +114,7 @@ Rails.application.routes.draw do
           end
           resource :saml_settings, only: [:show, :create, :update, :destroy]
           resource :meta_app, only: [:show, :update]
-          resources :social_comments, only: [:index, :update] do
+          resources :social_comments, only: [:index, :update, :destroy] do
             get :insights, on: :collection
           end
           resources :agent_bots, only: [:index, :create, :show, :update, :destroy] do

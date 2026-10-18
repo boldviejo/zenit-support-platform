@@ -49,7 +49,12 @@
         "ALL_TOPICS": "All topics",
         "ALL_REVIEWS": "Reviewed and pending",
         "PENDING_REVIEW": "Pending review"
-      }
+      },
+      "DELETE": "Delete",
+      "CONFIRM_DELETE": "Click again to delete",
+      "DELETE_ERROR": "Could not delete the comment",
+      "DELETED_BY": "Deleted by {name}",
+      "DELETED_AUTOMATICALLY": "Deleted automatically"
     },
     "INSIGHTS": {
       "HEADER": "Comment insights",
@@ -70,7 +75,8 @@
       "TOPICS": "Recurring topics",
       "TOPICS_NOTE": "Topics ordered by volume, with the sentiment of their comments.",
       "TOPICS_EMPTY": "No topics detected yet.",
-      "DECISIONS": "Proposed decisions"
+      "DECISIONS": "Proposed decisions",
+      "DELETED_HINT": "{count} deleted"
     },
     "SETTINGS": {
       "HEADER": "Comment settings",
@@ -81,7 +87,15 @@
       "SAVE_SUCCESS": "Topics saved",
       "SAVE_ERROR": "Could not save the topics",
       "SETUP_TITLE": "Meta app setup",
-      "SETUP_NOTE": "To receive comments, subscribe the feed (Page) and comments (Instagram) webhook fields in the Meta app and add the instagram_business_manage_comments permission. Then reconnect the Instagram inbox so it requests the new permission."
-    }
+      "SETUP_NOTE": "To receive and delete comments, subscribe the feed (Page) and comments (Instagram) webhook fields in the Meta app, add the instagram_business_manage_comments permission and the \"Manage everything on your Page\" use case (pages_manage_engagement). Then reconnect the Facebook and Instagram inboxes so they request the new permissions.",
+      "AUTO_DELETE_TITLE": "Automatic deletion",
+      "AUTO_DELETE_NOTE": "Delete comments from Facebook and Instagram as soon as the AI marks them as Remove with enough confidence. Deleted comments cannot be recovered; lower-confidence ones stay in the review queue.",
+      "AUTO_DELETE_THRESHOLD": "Minimum confidence",
+      "AUTO_DELETE_THRESHOLD_OPTION": "{confidence}% or more",
+      "AUTO_DELETE_SAVE": "Save automatic deletion",
+      "AUTO_DELETE_SUCCESS": "Automatic deletion saved",
+      "AUTO_DELETE_ERROR": "Could not save automatic deletion"
+    },
+    "AUTO_DELETE_MODE": "Automatic deletion is on: comments the AI marks as Remove with at least {confidence}% confidence are deleted from Facebook and Instagram."
   }
 }

@@ -49,7 +49,12 @@ export function useFacebookPageConnect() {
               : null
           );
         },
-        { scope: buildFacebookLoginScopes() }
+        {
+          scope: buildFacebookLoginScopes({
+            includeCommentScopes: !!getAccount.value(accountId.value)?.features
+              ?.comment_moderation,
+          }),
+        }
       );
     });
 

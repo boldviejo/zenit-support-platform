@@ -19,3 +19,6 @@ json.topics social_comment.topics
 json.mentions_someone social_comment.mentions_someone
 json.reviewed_decision social_comment.reviewed_decision
 json.reviewed_at social_comment.reviewed_at&.to_i
+json.deleted_at social_comment.deleted_at&.to_i
+json.deleted_by_name social_comment.deleted_by&.available_name
+json.delete_error social_comment.delete_error

@@ -3,6 +3,7 @@ import { computed, ref, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAlert } from 'dashboard/composables';
 import { useAccount } from 'dashboard/composables/useAccount';
+import { useAdmin } from 'dashboard/composables/useAdmin';
 import SocialCommentsAPI from 'dashboard/api/socialComments';
 import CommentListItem from 'dashboard/components-next/SocialComments/CommentListItem.vue';
 import { useCommentLabels } from 'dashboard/components-next/SocialComments/useCommentLabels';
@@ -11,6 +12,7 @@ import {
   SENTIMENTS,
   PLATFORMS,
   RESULTS_PER_PAGE,
+  DEFAULT_AUTO_DELETE_THRESHOLD,
 } from 'dashboard/components-next/SocialComments/constants';
 import Select from 'dashboard/components-next/select/Select.vue';
 import PaginationFooter from 'dashboard/components-next/pagination/PaginationFooter.vue';
@@ -21,6 +23,18 @@ const { decisionLabel, sentimentLabel, platformLabel, topicLabel } =
   useCommentLabels();
 
 const { currentAccount } = useAccount();
+const { isAdmin } = useAdmin();
+
+const modeDescription = computed(() => {
+  const settings = currentAccount.value?.settings || {};
+  if (!settings.comment_auto_delete) return t('SOCIAL_COMMENTS.SHADOW_MODE');
+
+  const threshold =
+    settings.comment_auto_delete_threshold || DEFAULT_AUTO_DELETE_THRESHOLD;
+  return t('SOCIAL_COMMENTS.AUTO_DELETE_MODE', {
+    confidence: Math.round(threshold * 100),
+  });
+});
 
 const comments = ref([]);
 const totalCount = ref(0);
@@ -105,14 +119,29 @@ const fetchComments = async () => {
   }
 };
 
+const replaceComment = updated => {
+  comments.value = comments.value.map(item =>
+    item.id === updated.id ? updated : item
+  );
+};
+
 const onReview = async (comment, decision) => {
   try {
     const { data } = await SocialCommentsAPI.review(comment.id, decision);
-    comments.value = comments.value.map(item =>
-      item.id === data.id ? data : item
-    );
+    replaceComment(data);
   } catch {
     useAlert(t('SOCIAL_COMMENTS.REVIEW.REVIEW_ERROR'));
+  }
+};
+
+const onDelete = async comment => {
+  try {
+    const { data } = await SocialCommentsAPI.delete(comment.id);
+    replaceComment(data);
+  } catch (error) {
+    useAlert(
+      error?.response?.data?.message || t('SOCIAL_COMMENTS.REVIEW.DELETE_ERROR')
+    );
   }
 };
 
@@ -140,7 +169,7 @@ onMounted(fetchComments);
         {{ t('SOCIAL_COMMENTS.REVIEW.HEADER') }}
       </h1>
       <p class="mt-1 text-sm text-n-slate-11">
-        {{ t('SOCIAL_COMMENTS.SHADOW_MODE') }}
+        {{ modeDescription }}
         {{ t('SOCIAL_COMMENTS.REVIEW.DESCRIPTION') }}
       </p>
       <div class="flex flex-wrap gap-2 mt-4">
@@ -169,7 +198,9 @@ onMounted(fetchComments);
           v-for="comment in comments"
           :key="comment.id"
           :comment="comment"
+          :can-delete="isAdmin"
           @review="decision => onReview(comment, decision)"
+          @delete="onDelete(comment)"
         />
       </template>
     </main>

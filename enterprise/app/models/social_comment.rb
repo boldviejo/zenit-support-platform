@@ -9,6 +9,8 @@
 #  confidence         :float
 #  decision           :string
 #  decision_reason    :text
+#  delete_error       :text
+#  deleted_at         :datetime
 #  language           :string
 #  llm_model          :string
 #  mentions_someone   :boolean          default(FALSE), not null
@@ -26,6 +28,7 @@
 #  updated_at         :datetime         not null
 #  account_id         :bigint           not null
 #  author_external_id :string
+#  deleted_by_id      :bigint
 #  external_id        :string           not null
 #  inbox_id           :bigint           not null
 #  parent_external_id :string
@@ -46,10 +49,12 @@ class SocialComment < ApplicationRecord
   SENTIMENTS = %w[positive neutral negative].freeze
   DEFAULT_TOPICS = %w[product shipping order_status sizing pricing quality customer_service availability returns].freeze
   OTHER_TOPIC = 'other'.freeze
+  DEFAULT_AUTO_DELETE_THRESHOLD = 0.9
 
   belongs_to :account
   belongs_to :inbox
   belongs_to :reviewed_by, class_name: 'User', optional: true
+  belongs_to :deleted_by, class_name: 'User', optional: true
 
   enum :platform, { facebook: 0, instagram: 1 }
   enum :status, { pending: 0, classified: 1, failed: 2 }
@@ -61,6 +66,17 @@ class SocialComment < ApplicationRecord
   validates :sentiment, inclusion: { in: SENTIMENTS }, allow_nil: true
 
   scope :in_range, ->(range) { where(commented_at: range) }
+
+  # Comments the account lets the AI delete on its own: proposed removals above its confidence threshold
+  def auto_delete?
+    return false unless remove? && deleted_at.nil? && ActiveModel::Type::Boolean.new.cast(account.comment_auto_delete)
+
+    confidence.to_f >= (account.comment_auto_delete_threshold || DEFAULT_AUTO_DELETE_THRESHOLD).to_f
+  end
+
+  def remove?
+    decision == 'remove'
+  end
 
   def self.topics_for(account)
     account.comment_topics.presence || DEFAULT_TOPICS

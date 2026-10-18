@@ -17,12 +17,7 @@ class SocialComments::PostContextService
   def fetch
     return facebook_post if platform == 'facebook'
 
-    # Instagram login channels use the Instagram graph; Instagram linked to a Page uses the Facebook graph
-    if channel.is_a?(Channel::Instagram)
-      instagram_media(instagram_login_url, channel.access_token)
-    else
-      instagram_media(facebook_graph_url, channel.page_access_token)
-    end
+    instagram_media
   rescue StandardError => e
     Rails.logger.warn("[SocialComments] Could not fetch #{platform} post #{post_id}: #{e.message}")
     nil
@@ -33,18 +28,11 @@ class SocialComments::PostContextService
     { caption: post['message'], permalink: post['permalink_url'] }
   end
 
-  def instagram_media(base_url, access_token)
-    response = HTTParty.get("#{base_url}/#{post_id}", query: { fields: 'caption,permalink', access_token: access_token })
+  def instagram_media
+    response = HTTParty.get("#{SocialComments::MetaGraph.base_url(channel)}/#{post_id}",
+                            query: { fields: 'caption,permalink', access_token: SocialComments::MetaGraph.access_token(channel) })
     raise response.body unless response.success?
 
     { caption: response['caption'], permalink: response['permalink'] }
-  end
-
-  def instagram_login_url
-    "https://graph.instagram.com/#{GlobalConfigService.load('INSTAGRAM_API_VERSION', 'v22.0')}"
-  end
-
-  def facebook_graph_url
-    "https://graph.facebook.com/#{GlobalConfigService.load('FACEBOOK_API_VERSION', 'v18.0')}"
   end
 end

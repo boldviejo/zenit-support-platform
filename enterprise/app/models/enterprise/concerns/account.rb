@@ -2,7 +2,8 @@ module Enterprise::Concerns::Account
   extend ActiveSupport::Concern
 
   included do
-    store_accessor :settings, :conversation_required_attributes, :comment_topics
+    store_accessor :settings, :conversation_required_attributes, :comment_topics, :comment_auto_delete, :comment_auto_delete_threshold
+    validates :comment_auto_delete_threshold, numericality: { greater_than_or_equal_to: 0.5, less_than_or_equal_to: 1 }, allow_nil: true
 
     has_many :sla_policies, dependent: :destroy_async
     has_many :applied_slas, dependent: :destroy_async

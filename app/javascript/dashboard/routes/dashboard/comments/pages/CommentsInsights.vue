@@ -62,6 +62,9 @@ const kpis = computed(() => {
       key: 'remove',
       label: t('SOCIAL_COMMENTS.INSIGHTS.TO_REMOVE'),
       value: decisions.remove,
+      hint: t('SOCIAL_COMMENTS.INSIGHTS.DELETED_HINT', {
+        count: insights.value.deleted,
+      }),
     },
     {
       key: 'agreement',

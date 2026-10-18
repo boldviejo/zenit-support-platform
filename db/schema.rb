@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_10_19_090000) do
+ActiveRecord::Schema[7.1].define(version: 2026_10_19_120000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1501,6 +1501,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_19_090000) do
     t.bigint "reviewed_by_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.bigint "deleted_by_id"
+    t.text "delete_error"
     t.index ["account_id", "commented_at"], name: "index_social_comments_on_account_id_and_commented_at"
     t.index ["account_id", "platform", "external_id"], name: "index_social_comments_on_account_platform_external_id", unique: true
     t.index ["inbox_id"], name: "index_social_comments_on_inbox_id"

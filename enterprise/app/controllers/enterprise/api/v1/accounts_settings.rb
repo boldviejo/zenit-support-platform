@@ -23,6 +23,6 @@ module Enterprise::Api::V1::AccountsSettings
   end
 
   def permitted_settings_attributes
-    super + [{ conversation_required_attributes: [] }, { comment_topics: [] }]
+    super + [{ conversation_required_attributes: [] }, { comment_topics: [] }, :comment_auto_delete, :comment_auto_delete_threshold]
   end
 end

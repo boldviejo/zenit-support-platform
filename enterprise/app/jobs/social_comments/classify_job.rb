@@ -8,5 +8,6 @@ class SocialComments::ClassifyJob < ApplicationJob
 
   def perform(comment)
     Captain::Llm::SocialCommentClassifierService.new(comment: comment).perform
+    SocialComments::DeleteJob.perform_later(comment) if comment.auto_delete?
   end
 end

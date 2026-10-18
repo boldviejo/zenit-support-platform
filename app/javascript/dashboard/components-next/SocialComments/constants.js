@@ -36,3 +36,6 @@ export const PLATFORM_ICONS = {
 
 export const INSIGHTS_RANGES = [7, 30, 90];
 export const RESULTS_PER_PAGE = 25;
+export const DELETE_CONFIRM_TIMEOUT = 4000;
+export const AUTO_DELETE_THRESHOLDS = [0.8, 0.9, 0.95];
+export const DEFAULT_AUTO_DELETE_THRESHOLD = 0.9;

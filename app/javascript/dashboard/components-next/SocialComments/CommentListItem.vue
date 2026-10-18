@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { dynamicTime } from 'shared/helpers/timeHelper';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
@@ -12,6 +12,7 @@ import {
   DECISION_COLORS,
   SENTIMENT_COLORS,
   PLATFORM_ICONS,
+  DELETE_CONFIRM_TIMEOUT,
 } from './constants';
 
 const props = defineProps({
@@ -19,9 +20,13 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  canDelete: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-const emit = defineEmits(['review']);
+const emit = defineEmits(['review', 'delete']);
 
 const { t } = useI18n();
 const { decisionLabel, sentimentLabel, platformLabel, topicLabel } =
@@ -42,6 +47,29 @@ const decisionOptions = computed(() =>
     label: decisionLabel(decision),
   }))
 );
+
+const isDeleted = computed(() => !!props.comment.deleted_at);
+const deletedLabel = computed(() =>
+  props.comment.deleted_by_name
+    ? t('SOCIAL_COMMENTS.REVIEW.DELETED_BY', {
+        name: props.comment.deleted_by_name,
+      })
+    : t('SOCIAL_COMMENTS.REVIEW.DELETED_AUTOMATICALLY')
+);
+
+// Deleting is irreversible, so the first click only arms the button
+const isConfirmingDelete = ref(false);
+const onDeleteClick = () => {
+  if (isConfirmingDelete.value) {
+    isConfirmingDelete.value = false;
+    emit('delete');
+    return;
+  }
+  isConfirmingDelete.value = true;
+  setTimeout(() => {
+    isConfirmingDelete.value = false;
+  }, DELETE_CONFIRM_TIMEOUT);
+};
 
 const reviewedDecision = computed({
   get: () => props.comment.reviewed_decision || '',
@@ -117,8 +145,28 @@ const reviewedDecision = computed({
       <p v-if="comment.decision_reason" class="text-xs text-n-slate-11">
         {{ comment.decision_reason }}
       </p>
+      <p
+        v-if="comment.delete_error && !isDeleted"
+        class="text-xs text-n-ruby-11"
+      >
+        {{ comment.delete_error }}
+      </p>
     </div>
     <div v-if="isClassified" class="flex flex-col items-end gap-2 shrink-0">
+      <Label v-if="isDeleted" :label="deletedLabel" color="ruby" compact />
+      <Button
+        v-else-if="canDelete"
+        :label="
+          isConfirmingDelete
+            ? t('SOCIAL_COMMENTS.REVIEW.CONFIRM_DELETE')
+            : t('SOCIAL_COMMENTS.REVIEW.DELETE')
+        "
+        icon="i-lucide-trash-2"
+        size="xs"
+        color="ruby"
+        :variant="isConfirmingDelete ? 'solid' : 'faded'"
+        @click="onDeleteClick"
+      />
       <Label
         v-if="isReviewed"
         :label="

@@ -7,6 +7,7 @@ import { useAccount } from 'dashboard/composables/useAccount';
 import TagInput from 'dashboard/components-next/taginput/TagInput.vue';
 import Button from 'dashboard/components-next/button/Button.vue';
 import SectionLayout from 'dashboard/routes/dashboard/settings/account/components/SectionLayout.vue';
+import AutoDeleteSettings from 'dashboard/components-next/SocialComments/AutoDeleteSettings.vue';
 
 const { t } = useI18n();
 const store = useStore();
@@ -71,6 +72,7 @@ const save = async () => {
           </div>
         </div>
       </SectionLayout>
+      <AutoDeleteSettings />
       <SectionLayout
         :title="t('SOCIAL_COMMENTS.SETTINGS.SETUP_TITLE')"
         :description="t('SOCIAL_COMMENTS.SETTINGS.SETUP_NOTE')"

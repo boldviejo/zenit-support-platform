@@ -16,6 +16,10 @@ class SocialCommentsAPI extends ApiClient {
     });
   }
 
+  delete(id) {
+    return axios.delete(`${this.url}/${id}`);
+  }
+
   insights(params) {
     return axios.get(`${this.url}/insights`, { params });
   }

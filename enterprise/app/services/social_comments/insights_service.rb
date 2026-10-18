@@ -23,6 +23,7 @@ class SocialComments::InsightsService
       total: comments.count,
       pending: comments.pending.count,
       failed: comments.failed.count,
+      deleted: comments.where.not(deleted_at: nil).count,
       decisions: counts_for(classified.group(:decision).count, SocialComment::DECISIONS),
       sentiments: counts_for(classified.group(:sentiment).count, SocialComment::SENTIMENTS),
       platforms: counts_for(comments.group(:platform).count, SocialComment.platforms.keys)

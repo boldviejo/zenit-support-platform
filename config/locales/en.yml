@@ -94,6 +94,8 @@ en:
       failed: Signup failed
     voice:
       call_already_accepted: '%{agent_name} is already handling the call.'
+    social_comments:
+      delete_failed: 'Meta could not delete the comment: %{error}'
     assignment_policy:
       not_found: Assignment policy not found
     attachments:

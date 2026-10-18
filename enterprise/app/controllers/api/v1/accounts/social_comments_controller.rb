@@ -5,7 +5,7 @@ class Api::V1::Accounts::SocialCommentsController < Api::V1::Accounts::BaseContr
 
   before_action :ensure_comment_moderation_enabled
   before_action :check_authorization
-  before_action :fetch_comment, only: :update
+  before_action :fetch_comment, only: [:update, :destroy]
 
   def index
     comments = filtered_comments
@@ -16,6 +16,13 @@ class Api::V1::Accounts::SocialCommentsController < Api::V1::Accounts::BaseContr
   # Shadow mode: a reviewer confirms or corrects the proposed decision
   def update
     @comment.update!(reviewed_decision: params.require(:reviewed_decision), reviewed_by: Current.user, reviewed_at: Time.current)
+  end
+
+  def destroy
+    SocialComments::DeleteService.new(comment: @comment, user: Current.user).perform
+    render :update
+  rescue CustomExceptions::SocialComment::DeleteFailed => e
+    render_error_response(e)
   end
 
   def insights
