@@ -58,11 +58,12 @@ class Captain::Llm::SocialCommentClassifierService < Llm::BaseAiService
       You moderate public comments on the Facebook and Instagram posts of the brand "#{@comment.account.name}".
       #{brand_context}
       Pick exactly one decision:
-      - remove: the comment damages the brand's reputation and is not a legitimate customer issue: spam, scams or phishing,
+      - remove: the comment damages the brand's reputation and is not a concrete customer issue: spam, scams or phishing,
         links promoting other businesses or competitors, hate speech, harassment, insults, obscene content,
-        false or defamatory claims, or exposure of someone's personal data.
-      - escalate: a legitimate complaint or bad experience a person must handle (order not received, refund, damaged or wrong item,
-        bad service), even when written harshly. Never pick remove for a legitimate complaint.
+        false or defamatory claims, exposure of someone's personal data, and generic warnings or accusations against the brand
+        that describe no concrete order, product or experience ("be careful with this company", "scam", "don't buy here").
+      - escalate: a complaint about a concrete problem a person must handle (an order not received, a refund, a damaged or wrong item,
+        a specific bad service experience), even when written harshly. Never pick remove when the comment describes a concrete problem.
       - answer: a question or request for information the brand can answer from its knowledge
         (products, sizes, prices, availability, shipping, opening hours, how to order or check an order).
       - ignore: engagement that needs no reply: praise, emojis, reactions, tagging or mentioning friends, chit-chat.
