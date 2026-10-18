@@ -81,7 +81,7 @@
       "SAVE_SUCCESS": "Topics saved",
       "SAVE_ERROR": "Could not save the topics",
       "SETUP_TITLE": "Meta app setup",
-      "SETUP_NOTE": "To receive comments, add the pages_read_user_content (Facebook) and instagram_business_manage_comments (Instagram) permissions to the Meta app and subscribe the feed (Page) and comments (Instagram) webhook fields. Then reconnect the Facebook and Instagram inboxes so they request the new permissions."
+      "SETUP_NOTE": "To receive comments, subscribe the feed (Page) and comments (Instagram) webhook fields in the Meta app and add the instagram_business_manage_comments permission. Then reconnect the Instagram inbox so it requests the new permission."
     }
   }
 }

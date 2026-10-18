@@ -19,8 +19,8 @@ export default {
     },
   },
   setup() {
-    const { facebookAppId, currentAccount } = useAccount();
-    return { facebookAppId, currentAccount };
+    const { facebookAppId } = useAccount();
+    return { facebookAppId };
   },
   computed: {
     inboxId() {
@@ -29,8 +29,6 @@ export default {
     facebookLoginScopes() {
       return buildFacebookLoginScopes({
         includeInstagramScopes: !!this.inbox.instagram_id,
-        includeCommentScopes:
-          !!this.currentAccount?.features?.comment_moderation,
       });
     },
   },
