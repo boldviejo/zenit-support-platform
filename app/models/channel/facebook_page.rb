@@ -46,13 +46,19 @@ class Channel::FacebookPage < ApplicationRecord
                                                           }).perform
   end
 
+  # `feed` delivers Page post comments; only requested when the account moderates comments,
+  # since it needs extra permissions on the Meta app
+  def subscribed_fields
+    fields = %w[messages message_deliveries message_echoes message_reads standby messaging_handovers messaging_postbacks]
+    fields << 'feed' if account.feature_enabled?('comment_moderation')
+    fields
+  end
+
   def subscribe
     # ref https://developers.facebook.com/docs/messenger-platform/reference/webhook-events
     Facebook::Messenger::Subscriptions.subscribe(
       access_token: page_access_token,
-      subscribed_fields: %w[
-        messages message_deliveries message_echoes message_reads standby messaging_handovers messaging_postbacks
-      ]
+      subscribed_fields: subscribed_fields
     )
   rescue StandardError => e
     Rails.logger.debug { "Rescued: #{e.inspect}" }

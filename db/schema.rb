@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_10_18_180000) do
+ActiveRecord::Schema[7.1].define(version: 2026_10_19_090000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1470,6 +1470,41 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_18_180000) do
     t.string "description"
     t.float "resolution_time_threshold"
     t.index ["account_id"], name: "index_sla_policies_on_account_id"
+  end
+
+  create_table "social_comments", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "inbox_id", null: false
+    t.integer "platform", null: false
+    t.string "external_id", null: false
+    t.string "parent_external_id"
+    t.string "post_external_id"
+    t.string "post_permalink"
+    t.string "author_external_id"
+    t.string "author_name"
+    t.text "post_caption"
+    t.text "message"
+    t.text "decision_reason"
+    t.datetime "commented_at", null: false
+    t.integer "status", default: 0, null: false
+    t.string "decision"
+    t.string "sentiment"
+    t.string "language"
+    t.string "llm_model"
+    t.string "reviewed_decision"
+    t.float "confidence"
+    t.float "sentiment_score"
+    t.jsonb "topics", default: [], null: false
+    t.boolean "mentions_someone", default: false, null: false
+    t.datetime "classified_at"
+    t.datetime "reviewed_at"
+    t.bigint "reviewed_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "commented_at"], name: "index_social_comments_on_account_id_and_commented_at"
+    t.index ["account_id", "platform", "external_id"], name: "index_social_comments_on_account_platform_external_id", unique: true
+    t.index ["inbox_id"], name: "index_social_comments_on_inbox_id"
+    t.index ["reviewed_by_id"], name: "index_social_comments_on_reviewed_by_id"
   end
 
   create_table "taggings", id: :serial, force: :cascade do |t|

@@ -1,5 +1,6 @@
 module Instagram::IntegrationHelper
   REQUIRED_SCOPES = %w[instagram_business_basic instagram_business_manage_messages].freeze
+  COMMENT_SCOPES = %w[instagram_business_manage_comments].freeze
 
   # Generates a signed JWT token for Instagram integration
   #

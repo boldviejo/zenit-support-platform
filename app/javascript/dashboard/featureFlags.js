@@ -42,6 +42,7 @@ export const FEATURE_FLAGS = {
   CUSTOM_ROLES: 'custom_roles',
   CHATWOOT_V4: 'chatwoot_v4',
   CHANNEL_INSTAGRAM: 'channel_instagram',
+  COMMENT_MODERATION: 'comment_moderation',
   CHANNEL_TIKTOK: 'channel_tiktok',
   CHANNEL_VOICE: 'channel_voice',
   CONTACT_CHATWOOT_SUPPORT_TEAM: 'contact_chatwoot_support_team',

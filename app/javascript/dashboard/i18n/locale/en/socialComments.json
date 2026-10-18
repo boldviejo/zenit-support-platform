@@ -1,0 +1,87 @@
+{
+  "SOCIAL_COMMENTS": {
+    "SHADOW_MODE": "Shadow mode: the AI proposes a decision for every comment but nothing is done on Facebook or Instagram.",
+    "DECISIONS": {
+      "REMOVE": "Remove",
+      "ANSWER": "Answer",
+      "ESCALATE": "Escalate",
+      "IGNORE": "Ignore"
+    },
+    "SENTIMENTS": {
+      "POSITIVE": "Positive",
+      "NEUTRAL": "Neutral",
+      "NEGATIVE": "Negative"
+    },
+    "PLATFORMS": {
+      "FACEBOOK": "Facebook",
+      "INSTAGRAM": "Instagram"
+    },
+    "TOPICS": {
+      "PRODUCT": "Product",
+      "SHIPPING": "Shipping",
+      "ORDER_STATUS": "Order status",
+      "SIZING": "Sizing",
+      "PRICING": "Pricing",
+      "QUALITY": "Quality",
+      "CUSTOMER_SERVICE": "Customer service",
+      "AVAILABILITY": "Availability",
+      "RETURNS": "Returns",
+      "OTHER": "Other"
+    },
+    "REVIEW": {
+      "HEADER": "Comments",
+      "DESCRIPTION": "Confirm or correct each proposed decision to measure how accurate the AI is before letting it act.",
+      "EMPTY_STATE": "No comments match these filters yet.",
+      "FETCH_ERROR": "Could not load the comments",
+      "VIEW_POST": "View post",
+      "REPLY": "Reply to a comment",
+      "CONFIDENCE": "{confidence}% confident",
+      "CLASSIFYING": "Classifying…",
+      "FAILED": "Classification failed",
+      "MARK_CORRECT": "Correct",
+      "CHANGE_DECISION": "Change decision",
+      "REVIEWED_AS": "Reviewed: {decision}",
+      "REVIEW_ERROR": "Could not save the review",
+      "FILTERS": {
+        "ALL_DECISIONS": "All decisions",
+        "ALL_SENTIMENTS": "All sentiments",
+        "ALL_PLATFORMS": "All platforms",
+        "ALL_TOPICS": "All topics",
+        "ALL_REVIEWS": "Reviewed and pending",
+        "PENDING_REVIEW": "Pending review"
+      }
+    },
+    "INSIGHTS": {
+      "HEADER": "Comment insights",
+      "DESCRIPTION": "How people talk about the brand in Facebook and Instagram comments.",
+      "RANGE": "Last {days} days",
+      "FETCH_ERROR": "Could not load the insights",
+      "EMPTY_STATE": "No comments in this period yet.",
+      "STILL_CLASSIFYING": "{count} comments are still being classified.",
+      "TOTAL": "Comments",
+      "NEGATIVE": "Negative",
+      "TO_ANSWER": "Questions to answer",
+      "TO_REMOVE": "Harmful comments",
+      "AGREEMENT": "AI agreement",
+      "AGREEMENT_HINT": "{agreed} of {reviewed} reviewed",
+      "NOT_REVIEWED": "Nothing reviewed yet",
+      "SENTIMENT_BALANCE": "Sentiment balance",
+      "SENTIMENT_OVER_TIME": "Sentiment per day",
+      "TOPICS": "Recurring topics",
+      "TOPICS_NOTE": "Topics ordered by volume, with the sentiment of their comments.",
+      "TOPICS_EMPTY": "No topics detected yet.",
+      "DECISIONS": "Proposed decisions"
+    },
+    "SETTINGS": {
+      "HEADER": "Comment settings",
+      "TOPICS_TITLE": "Topics",
+      "TOPICS_NOTE": "The AI tags every comment with these topics so recurring complaints and questions show up in the insights. Anything else is tagged as Other.",
+      "TOPICS_PLACEHOLDER": "Add a topic and press Enter",
+      "SAVE": "Save topics",
+      "SAVE_SUCCESS": "Topics saved",
+      "SAVE_ERROR": "Could not save the topics",
+      "SETUP_TITLE": "Meta app setup",
+      "SETUP_NOTE": "To receive comments, add the pages_read_user_content (Facebook) and instagram_business_manage_comments (Instagram) permissions to the Meta app and subscribe the feed (Page) and comments (Instagram) webhook fields. Then reconnect the Facebook and Instagram inboxes so they request the new permissions."
+    }
+  }
+}

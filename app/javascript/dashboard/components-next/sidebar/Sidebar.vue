@@ -594,6 +594,28 @@ const menuItems = computed(() => {
         ]
       : []),
     {
+      name: 'Comments',
+      label: t('SIDEBAR.COMMENTS'),
+      icon: 'i-lucide-message-square-text',
+      children: [
+        {
+          name: 'Comments Review',
+          label: t('SIDEBAR.COMMENTS_REVIEW'),
+          to: accountScopedRoute('comments_review_index'),
+        },
+        {
+          name: 'Comments Insights',
+          label: t('SIDEBAR.COMMENTS_INSIGHTS'),
+          to: accountScopedRoute('comments_insights_index'),
+        },
+        {
+          name: 'Comments Settings',
+          label: t('SIDEBAR.COMMENTS_SETTINGS'),
+          to: accountScopedRoute('comments_settings_index'),
+        },
+      ],
+    },
+    {
       name: 'Contacts',
       label: t('SIDEBAR.CONTACTS'),
       icon: 'i-lucide-contact',

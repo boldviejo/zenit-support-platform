@@ -42,12 +42,20 @@ class Channel::Instagram < ApplicationRecord
                                                           }).perform
   end
 
+  # `comments` needs the instagram_business_manage_comments permission, so it is only
+  # requested when the account moderates comments
+  def subscribed_fields
+    fields = %w[messages message_reactions messaging_seen]
+    fields << 'comments' if account.feature_enabled?('comment_moderation')
+    fields
+  end
+
   def subscribe
     # ref https://developers.facebook.com/docs/instagram-platform/webhooks#enable-subscriptions
     HTTParty.post(
       "#{base_uri}/#{instagram_id}/subscribed_apps",
       query: {
-        subscribed_fields: %w[messages message_reactions messaging_seen],
+        subscribed_fields: subscribed_fields,
         access_token: access_token
       }
     )

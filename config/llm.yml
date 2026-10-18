@@ -139,6 +139,10 @@ features:
         gemini-3-pro,
       ]
     default: gpt-4.1
+  comment_classification:
+    models:
+      [gpt-4.1-nano, gpt-4.1-mini, gpt-5-mini, gpt-4.1, gpt-6-luna, gemini-3-flash, claude-haiku-5-5, claude-haiku-4.5]
+    default: gpt-4.1-mini
   label_suggestion:
     models:
       [gpt-4.1-nano, gpt-4.1-mini, gpt-5-mini, gpt-6-luna, gemini-3-flash, claude-haiku-5-5, claude-haiku-4.5]
