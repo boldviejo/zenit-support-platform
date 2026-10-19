@@ -2,6 +2,7 @@ module Enterprise::Internal::TriggerDailyScheduledItemsJob
   def perform
     super
 
+    Internal::ReconcilePlanConfigService.new.perform if Rails.env.production?
     Captain::Documents::ScheduleSyncsJob.perform_later('enterprise')
     Captain::Documents::ScheduleSyncsJob.perform_later('business') if business_auto_sync_due?
     Captain::Documents::ScheduleSyncsJob.perform_later('startups') if startup_auto_sync_due?
